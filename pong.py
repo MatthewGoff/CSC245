@@ -4,42 +4,68 @@
 
 import pygame
 import random
+from vectors import Vec_2D
 
-width = 1000
-height = 1000
-colors = []
-speed_limit = 5
+width = 640
+height = 480
+num_balls = 100
 
-class ball:
-    x_pos = 0
-    y_pos = 0
-    x_speed = 1
-    y_speed = 1
-    x_acc = -0.1;
-    y_acc = -0.1;
+speed_limit = 0.1
+size_limit = 10
 
+viscocity = 2
+bounce = 0.01
 
-    radius = 10
-    color = pygame.color.Color(225,0,0)
+advanced_physics = False;
 
-    def __init__(self, x_pos_param, y_pos_param, x_speed_param, y_speed_param, r,g,b):
-        self.x_pos=x_pos_param
-        self.y_pos=y_pos_param
-        self.x_speed = x_speed_param
-        self.y_speed = y_speed_param
-        self.color = pygame.color.Color(r, g, b)
+class Ball:
+
+    def __init__(self, position = None, velocity = None, rgb = None, radius = None):
+        if radius == None:
+            self.radius = size_limit
+        else:
+            self.radius = radius
+
+        if position == None:
+            self.position = Vec_2D(random.uniform(0+self.radius, width-self.radius),
+                                    random.uniform(0+self.radius, height-self.radius))
+        else:
+            self.position = position
+
+        if velocity == None:
+            self.velocity = Vec_2D(random.uniform(-speed_limit, speed_limit),
+                                    random.uniform(-speed_limit, speed_limit))
+        else:
+            self.velocity = velocity
+
+        if rgb == None:
+            self.color = pygame.color.Color(random.randint(0, 255),
+                                            random.randint(0, 255),
+                                            random.randint(0, 255))
+        else:
+            self.color = pygame.color.Color(rgb[0],rgb[1],rgb[2])
+
 
     def tick(self):
-        self.x_pos += self.x_speed
-        self.y_pos += self.y_speed
+        acceleration = Vec_2D(0,0)
 
-        if (self.x_pos <= 0+(self.radius)) or (self.x_pos >= width-(self.radius)):
-            self.x_speed = -1*self.x_speed
+        if self.get_x() <= 0+self.radius:
             self.bounce()
+            acceleration.add(Vec_2D(-2*self.velocity.get_x(), 0))
+        elif self.get_x() >= width-self.radius:
+            self.bounce()
+            acceleration.add(Vec_2D(-2*self.velocity.get_x(), 0))
 
-        if (self.y_pos <= 0+(self.radius)) or (self.y_pos >= height-(self.radius)):
-            self.y_speed = -1*self.y_speed
+        if self.get_y() <= 0+self.radius:
             self.bounce()
+            acceleration.add(Vec_2D(0, -2*self.velocity.get_y()))
+        elif self.get_y() >= height-self.radius:
+            self.bounce()
+            acceleration.add(Vec_2D(0, -2*self.velocity.get_y()))
+
+        self.velocity.add(acceleration)
+        self.position.add(self.velocity)
+
 
     def bounce(self):
         self.color = pygame.color.Color(random.randint(0,255),random.randint(0,255),random.randint(0,255))
@@ -48,7 +74,13 @@ class ball:
         return self.radius
 
     def get_pos(self):
-        return (self.x_pos,self.y_pos)
+        return (self.get_x(),self.get_y())
+
+    def get_x(self):
+        return self.position.get_x()
+
+    def get_y(self):
+        return self.position.get_y()
 
     def get_color(self):
         return self.color
@@ -62,12 +94,8 @@ def run_game():
 
     # Initialize balls
     my_balls = []
-    for i in range(0, random.randint(0,10000)):
-        my_balls += [ball(random.randint(0,width),
-                          random.randint(0,height),
-                          random.randint(-speed_limit,speed_limit),
-                          random.randint(-speed_limit,speed_limit),
-                          random.randint(0,255), random.randint(0,255), random.randint(0,255))]
+    for i in range(0, num_balls):
+        my_balls += [Ball()]
 
 
     # The game loop starts here.
@@ -92,8 +120,8 @@ def run_game():
         my_win.fill(pygame.color.Color("black"))
 
         # Draw ball
-        for i in range(0,len(my_balls)):
-            pygame.draw.circle(my_win, my_balls[i].get_color(), my_balls[i].get_pos(), my_balls[i].get_radius())
+        for ball in my_balls:
+            pygame.draw.circle(my_win, ball.get_color(), (int(ball.get_x()),int(ball.get_y())), ball.get_radius())
 
         # Swap display
         pygame.display.update()
@@ -101,7 +129,6 @@ def run_game():
     # The game loop ends here.
 
     pygame.quit()
-
 
 # Start game
 run_game()
