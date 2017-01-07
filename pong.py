@@ -4,19 +4,19 @@
 
 import pygame
 import random
+import math
 from vectors import Vec_2D
 
 width = 640
 height = 480
-num_balls = 100
+num_balls = 1
 
 speed_limit = 0.1
-size_limit = 10
+size_limit = 40
 
-viscocity = 2
-bounce = 0.01
-
-advanced_physics = False;
+advanced_physics = True;
+elasticity = 0.001
+drag = 0.001
 
 class Ball:
 
@@ -38,6 +38,8 @@ class Ball:
         else:
             self.velocity = velocity
 
+        self.acceleration = Vec_2D(0, 0)
+
         if rgb == None:
             self.color = pygame.color.Color(random.randint(0, 255),
                                             random.randint(0, 255),
@@ -45,31 +47,56 @@ class Ball:
         else:
             self.color = pygame.color.Color(rgb[0],rgb[1],rgb[2])
 
-
-    def tick(self):
-        acceleration = Vec_2D(0,0)
+    def update(self):
+        self.acceleration = Vec_2D(0,0)
+        #if advanced_physics:
+            #self.acceleration = self.velocity.unit().mult(-1*drag*self.velocity.mag()**2)
 
         if self.get_x() <= 0+self.radius:
             self.bounce()
-            acceleration.add(Vec_2D(-2*self.velocity.get_x(), 0))
+            if advanced_physics:
+                collision_point = Vec_2D(0,self.get_y())
+                collision_force = collision_point.sub(self.position).mult(elasticity)
+                print "collision! collision_force = "+str(collision_force)
+                self.acceleration = self.acceleration.add(collision_force)
+            else:
+                self.acceleration.add(Vec_2D(-2*self.velocity.get_x(), 0))
         elif self.get_x() >= width-self.radius:
             self.bounce()
-            acceleration.add(Vec_2D(-2*self.velocity.get_x(), 0))
+            if advanced_physics:
+                collision_point = Vec_2D(width,self.get_y())
+                collision_force = collision_point.sub(self.position).mult(elasticity)
+                print "collision! collision_force = "+str(collision_force)
+                self.acceleration = self.acceleration.add(collision_force)
+            else:
+                self.acceleration.add(Vec_2D(-2*self.velocity.get_x(), 0))
 
         if self.get_y() <= 0+self.radius:
             self.bounce()
-            acceleration.add(Vec_2D(0, -2*self.velocity.get_y()))
+            if advanced_physics:
+                collision_point = Vec_2D(self.get_x(),0)
+                collision_force = collision_point.sub(self.position).mult(elasticity)
+                print "collision! collision_force = "+str(collision_force)
+                self.acceleration = self.acceleration.add(collision_force)
+            else:
+                self.acceleration.add(Vec_2D(0, -2*self.velocity.get_y()))
         elif self.get_y() >= height-self.radius:
             self.bounce()
-            acceleration.add(Vec_2D(0, -2*self.velocity.get_y()))
+            if advanced_physics:
+                collision_point = Vec_2D(self.get_x(),height)
+                collision_force = collision_point.sub(self.position).mult(elasticity)
+                print "collision! collision_force = "+str(collision_force)
+                self.acceleration = self.acceleration.add(collision_force)
+            else:
+                self.acceleration.add(Vec_2D(0, -2*self.velocity.get_y()))
 
-        self.velocity.add(acceleration)
-        self.position.add(self.velocity)
-
+    def simulate(self):
+        self.velocity = self.velocity.add(self.acceleration)
+        self.position = self.position.add(self.velocity)
 
     def bounce(self):
         self.color = pygame.color.Color(random.randint(0,255),random.randint(0,255),random.randint(0,255))
-
+        self.color = pygame.color.Color("White")
     def get_radius(self):
         return self.radius
 
@@ -84,6 +111,9 @@ class Ball:
 
     def get_color(self):
         return self.color
+
+    def get_mass(self):
+        return math.pi*(self.radius**2)
 
 def run_game():
 
@@ -109,11 +139,12 @@ def run_game():
 
 
         # 2. Apply rules of game world
-        for i in range(0,len(my_balls)):
-            my_balls[i].tick()
+        for ball in my_balls:
+            ball.update()
 
         # 3. Simulate the world
-        # None currently
+        for ball in my_balls:
+            ball.simulate()
 
         # 4. Draw frame
         # Draw Background
