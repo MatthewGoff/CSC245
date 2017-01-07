@@ -2,23 +2,32 @@
 
 class Vec_2D:
 
-    def __init__(self, x_param, y_param):
-        self.x = x_param
-        self.y = y_param
+    def __init__(self, x, y):
+        self.vec = (x, y)
 
     def add(self, other):
-        self.x = self.get_x() + other.get_x()
-        self.y = self.get_y() + other.get_y()
+        return Vec_2D(self.get_x() + other.get_x(), self.get_y() + other.get_y())
+
+    def sub(self, other):
+        return Vec_2D(self.get_x() - other.get_x(), self.get_y() - other.get_y())
 
     def mult(self, scalar):
-        self.x = self.get_x() * scalar
-        self.y = self.get_y() * scalar
+        return Vec_2D(self.get_x()*scalar, self.get_y()*scalar)
+
+    def dot(self, other):
+        return self.get_x()*other.get_x()+self.get_y()*other.get_y()
 
     def get_x(self):
-        return self.x
+        return self.vec[0]
 
     def get_y(self):
-        return self.y
+        return self.vec[1]
+
+    def mag(self):
+        return (self.get_x()**2+self.get_y()**2)**(.5)
+
+    def unit(self):
+        return self.mult(1.0/self.mag())
 
     def __str__(self):
-        return "<"+str(self.x)+","+str(self.y)+">"
+        return "<"+str(self.get_x())+","+str(self.get_y())+">"
