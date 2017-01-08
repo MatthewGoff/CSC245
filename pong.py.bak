@@ -4,8 +4,8 @@ from math import pi
 from vectors import Vec_2D
 import sys
 
-seed = random.randint(0, sys.maxsize)
-print("seed = "+str(seed))
+seed = random.randint(0, sys.maxint)
+print "seed = "+str(seed)
 myRand = random.Random(seed)
 
 # Window Parameters
