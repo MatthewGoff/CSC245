@@ -23,6 +23,8 @@ def run_game():
 
         my_balls += [objects.Ball(position, velocity, color, radius)]
 
+    quadtree = util.Quadtree(0, util.Rectangle(0, util.WINDOW_HEIGHT, 0, util.WINDOW_WIDTH))
+
     # The game loop starts here.
     keep_going = True
     while keep_going:
@@ -34,6 +36,7 @@ def run_game():
 
         # 2. Apply rules of game world
         for i in range(0,len(my_balls)):
+            quadtree.insert(my_balls[i])
             collide_walls(my_balls[i])
             for j in range(i+1,len(my_balls)):
                 test_collision(my_balls[i], my_balls[j])
@@ -46,32 +49,13 @@ def run_game():
         my_win.fill(pygame.color.Color("black"))
 
         for ball in my_balls:
-            pos = ball.get_position()
-            color = ball.get_color()
+            draw_ball(my_win, ball)
 
-            if util.COLOR_SCHEME == "gradient" or util.COLOR_SCHEME == "speed":
-                if util.COLOR_SCHEME == "speed":
-                    r = int((ball.get_velocity().mag() * 50) % 255)
-                    g = r
-                    b = g
-                else:
-                    r = int(255 * pos.get_x() / util.WINDOW_WIDTH)
-                    g = int(255 * pos.get_y() / util.WINDOW_HEIGHT)
-                    b = int(255 * ball.get_radius() / util.RADIUS_RANGE[1])
-                    #b = int((ball.get_velocity().mag() * 500) % 255)
+        if util.DRAW_QUADTREE:
+            draw_quadtree(my_win, quadtree)
 
-                r = min(max(0, r), 255)  # encase it shoots over
-                g = min(max(0, g), 255)
-                b = min(max(0, b), 255)
-
-                color =  pygame.color.Color(r, g, b, 1)
-
-            pygame.draw.circle(my_win, color, (int(ball.get_position().get_x()), int(ball.get_position().get_y())), ball.get_radius())
-
-            if util.DRAW_VELOCITY:
-                vel = ball.get_velocity().scale(50)
-                vec = pos.add(vel)
-                pygame.draw.line(my_win, pygame.color.Color("white"), (pos.get_x(), pos.get_y()), (vec.get_x(),vec.get_y()), 3)
+        # 5. Takedown
+        quadtree.clear()
 
         # Swap display
         pygame.display.update()
@@ -135,6 +119,62 @@ def collide_walls(ball1):
         if collision_vec.dot(ball1.get_next_velocity()) > 0:
             ball1.collide(ball1.get_next_velocity().add(util.Vec2D(0, -2 * ball1.get_next_velocity().get_y())))
 
+
+def draw_quadtree(window, quadtree, myquad=0):
+    if quadtree.is_split():
+        bounds = quadtree.get_bounds()
+        pygame.draw.line(window,
+                         pygame.color.Color("white"),
+                         (bounds.get_h_median(), bounds.get_top()),
+                         (bounds.get_h_median(), bounds.get_bottom()),
+                         1)
+        pygame.draw.line(window,
+                         pygame.color.Color("white"),
+                         (bounds.get_left(), bounds.get_v_median()),
+                         (bounds.get_right(), bounds.get_v_median()),
+                         1)
+        for i in range(0,4):
+            draw_quadtree(window, quadtree.get_nodes()[i], i)
+
+    draw_text(window, str(quadtree.get_population()), quadtree.get_bounds().get_center())
+
+
+def draw_ball(window, ball):
+    pos = ball.get_position()
+    color = ball.get_color()
+
+    if util.COLOR_SCHEME == "gradient" or util.COLOR_SCHEME == "speed":
+        if util.COLOR_SCHEME == "speed":
+            r = int((ball.get_velocity().mag() * 50) % 255)
+            g = r
+            b = g
+        else:
+            r = int(255 * pos.get_x() / util.WINDOW_WIDTH)
+            g = int(255 * pos.get_y() / util.WINDOW_HEIGHT)
+            b = int(255 * ball.get_radius() / util.RADIUS_RANGE[1])
+            # b = int((ball.get_velocity().mag() * 500) % 255)
+
+        r = min(max(0, r), 255)  # encase it shoots over
+        g = min(max(0, g), 255)
+        b = min(max(0, b), 255)
+
+        color = pygame.color.Color(r, g, b, 1)
+
+    pygame.draw.circle(window, color, (int(ball.get_position().get_x()), int(ball.get_position().get_y())),
+                       ball.get_radius())
+
+    if util.DRAW_VELOCITY:
+        vel = ball.get_velocity().scale(50)
+        vec = pos.add(vel)
+        pygame.draw.line(window, pygame.color.Color("white"), (pos.get_x(), pos.get_y()), (vec.get_x(), vec.get_y()), 3)
+
+def draw_text(window, text, center):
+    basic_font = pygame.font.SysFont(None, 24)
+    text = basic_font.render(text, True, (255, 255, 255), (0, 0, 0))
+    text_rect = text.get_rect()
+    text_rect.centerx = center.get_x()
+    text_rect.centery = center.get_y()
+    window.blit(text, text_rect)
 
 # Start game
 run_game()
