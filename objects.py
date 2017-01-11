@@ -3,16 +3,17 @@ import util
 
 
 class Ball:
-    def __init__(self, position, velocity, color, radius):
+    def __init__(self, position, velocity, color, radius, name):
         self.position = position
         self.velocity = velocity
         self.color = color
         self.radius = radius
+        self.name = name
         self.next_velocity = self.velocity
         self.next_color = self.color
 
     def collide(self, next_velocity):
-        if True:
+        if util.COLOR_SCHEME == "bounce":
             self.next_color = util.random_color()
         self.next_velocity = next_velocity
 
@@ -44,3 +45,6 @@ class Ball:
             return 1/(pi*self.get_radius()**2)
         else:
             return pi*self.get_radius()**2
+
+    def __str__(self):
+        return "("+str(self.name)+")"

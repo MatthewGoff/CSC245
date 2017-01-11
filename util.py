@@ -1,19 +1,18 @@
-import math
 import random
 import sys
 import pygame
 
 seed = random.randint(0, sys.maxint)
-print "seed = "+str(seed)
 RandGen = random.Random(seed)
 
 # Window Parameters
-WINDOW_WIDTH = 640 * 2
-WINDOW_HEIGHT = 480 * 2
+WINDOW_WIDTH = 640*2
+WINDOW_HEIGHT = 480*2
+WINDOW_COLOR = pygame.Color("black")
 
 # Ball parameters
 NUM_BALLS = 100
-INITIAL_SPEED = 1.0        # pixels per "tick"
+INITIAL_SPEED = 2.0        # pixels per "tick"
 RADIUS_RANGE = (10, 50)    # in pixels
 
 # Physics parameters
@@ -23,15 +22,33 @@ INVERSE_MASS = False
 
 # Display parameters
 DRAW_VELOCITY = False
-DRAW_QUADTREE = True
+DRAW_QUADTREE = False
+LABEL_OBJECTS = False
+CONTINUOUS = True
 COLOR_SCHEME = "gradient"     # bounce, random, gradient, speed (enumerators were released in python 3.4)
 
 
+def get_seed():
+    return seed
+
+
 def random_color():
-    return pygame.color.Color(RandGen.randint(0, 255),
-                              RandGen.randint(0, 255),
-                              RandGen.randint(0, 255),
-                              1)
+    return pygame.Color(RandGen.randint(0, 255),
+                        RandGen.randint(0, 255),
+                        RandGen.randint(0, 255),
+                        255)
+
+
+def list_to_string(list):
+    string = "["
+    for i in range(0, len(list)-1):
+        string += str(list[i])+","
+
+    if len(list) != 0:
+        string += str(list[-1])
+
+    string += "]"
+    return string
 
 
 class Vec2D:
@@ -59,28 +76,6 @@ class Vec2D:
 
     def mag(self):
         return (self.get_x()**2+self.get_y()**2)**.5
-
-    def angle(self):
-        #Not working!
-        print "calculating angle"
-        print "x = "+str(self.get_x())
-        print "y = "+str(self.get_y())
-
-        angle = 0
-        if self.get_x() == 0:
-            if self.get_y() > 0:
-                angle = math.pi/2
-            else:
-                angle = -1*math.pi/2
-        elif self.get_x() < 0:
-            print "need to revers"
-            print "atan = "+str(math.atan(self.get_y()/self.get_x()))
-            angle = math.atan(self.get_y()/self.get_x())+math.pi
-        else:
-            angle = math.atan(self.get_y()/self.get_x())
-
-        print "returning "+str(angle)
-        return angle
 
     def unit(self):
         if self.mag() == 0:
@@ -135,7 +130,7 @@ class Quadtree:
     MAX_OBJECTS = 4
     MAX_LEVELS = 7
 
-    def __init__(self, level, bounds):
+    def __init__(self, bounds, level=0):
         self.level = level
         self.members = []
         self.bounds = bounds
@@ -143,29 +138,32 @@ class Quadtree:
 
     def clear(self):
         self.members = []
-        for i in range(0,4):
+        for i in range(0, 4):
             if self.nodes[i] is not None:
                 self.nodes[i].clear()
                 self.nodes[i] = None
 
     def split(self):
-        self.nodes[0] = Quadtree(self.level + 1, Rectangle(self.bounds.get_top(),
-                                                           self.bounds.get_v_median(),
-                                                           self.bounds.get_h_median(),
-                                                           self.bounds.get_right()))
-        self.nodes[1] = Quadtree(self.level + 1, Rectangle(self.bounds.get_top(),
-                                                           self.bounds.get_v_median(),
-                                                           self.bounds.get_left(),
-                                                           self.bounds.get_h_median()))
-        self.nodes[2] = Quadtree(self.level + 1, Rectangle(self.bounds.get_v_median(),
-                                                           self.bounds.get_bottom(),
-                                                           self.bounds.get_left(),
-                                                           self.bounds.get_h_median()))
-        self.nodes[3] = Quadtree(self.level + 1, Rectangle(self.bounds.get_v_median(),
-                                                           self.bounds.get_bottom(),
-                                                           self.bounds.get_h_median(),
-                                                           self.bounds.get_right()))
-
+        self.nodes[0] = Quadtree(Rectangle(self.bounds.get_top(),
+                                           self.bounds.get_v_median(),
+                                           self.bounds.get_h_median(),
+                                           self.bounds.get_right()),
+                                 self.level + 1)
+        self.nodes[1] = Quadtree(Rectangle(self.bounds.get_top(),
+                                           self.bounds.get_v_median(),
+                                           self.bounds.get_left(),
+                                           self.bounds.get_h_median()),
+                                 self.level + 1)
+        self.nodes[2] = Quadtree(Rectangle(self.bounds.get_v_median(),
+                                           self.bounds.get_bottom(),
+                                           self.bounds.get_left(),
+                                           self.bounds.get_h_median()),
+                                 self.level + 1)
+        self.nodes[3] = Quadtree(Rectangle(self.bounds.get_v_median(),
+                                           self.bounds.get_bottom(),
+                                           self.bounds.get_h_median(),
+                                           self.bounds.get_right()),
+                                 self.level + 1)
 
     def get_index(self, member):
 
@@ -187,7 +185,6 @@ class Quadtree:
             index = self.get_index(member)
             if index != -1:
                 self.nodes[index].insert(member)
-
                 return
 
         self.members += [member]
@@ -204,12 +201,12 @@ class Quadtree:
                 else:
                     i += 1
 
-    def retrieve_neighbors(self, member):
+    def get_neighbors(self, member):
         index = self.get_index(member)
         if (index != -1) and (self.nodes[0] is not None):
-            return self.members + self.nodes[index].retrieve_neighbors(member)
-        else:
-            return self.members
+            return self.members + self.nodes[index].get_neighbors(member)
+
+        return self.members
 
     def get_nodes(self):
         return self.nodes
