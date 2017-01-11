@@ -9,21 +9,17 @@ class Ball:
         self.color = color
         self.radius = radius
         self.name = name
-        self.next_velocity = self.velocity
-        self.next_color = self.color
 
     def collide(self, next_velocity):
         if util.COLOR_SCHEME == "bounce":
-            self.next_color = util.random_color()
-        self.next_velocity = next_velocity
+            self.color = util.random_color()
+        self.velocity = next_velocity
 
     def simulate(self):
-        acceleration = self.next_velocity.unit().scale(util.DRAG_COEFFICIENT*self.next_velocity.mag()**2)
+        acceleration = self.velocity.unit().scale(util.DRAG_COEFFICIENT * self.velocity.mag() ** 2)
         if util.DRAG:
-            self.next_velocity = self.next_velocity.add(acceleration)
-        self.velocity = self.next_velocity
+            self.velocity = self.velocity.add(acceleration)
         self.position = self.position.add(self.velocity)
-        self.color = self.next_color
 
     def get_radius(self):
         return self.radius
@@ -33,9 +29,6 @@ class Ball:
 
     def get_velocity(self):
         return self.velocity
-
-    def get_next_velocity(self):
-        return self.next_velocity
 
     def get_color(self):
         return self.color

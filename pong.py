@@ -38,6 +38,14 @@ def run_game():
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                 advance = True
 
+        keys = pygame.key.get_pressed()
+
+        if keys[pygame.K_UP]:
+            print "up"
+
+        if keys[pygame.K_DOWN]:
+            print "down"
+
         if advance:
 
             # 2. Apply rules of game world
@@ -92,8 +100,8 @@ def test_collision(ball_1, ball_2):
 
     m1 = ball_1.get_mass()
     m2 = ball_2.get_mass()
-    v1 = ball_1.get_next_velocity()
-    v2 = ball_2.get_next_velocity()
+    v1 = ball_1.get_velocity()
+    v2 = ball_2.get_velocity()
 
     unit_norm = normal.unit()
     unit_tang = unit_norm.perp()
@@ -124,20 +132,20 @@ def collide_walls(ball1):
     # see if the ball has collided with any walls and if so calc result
     if ball1.get_position().get_x() <= 0 + ball1.get_radius():
         collision_vec = util.Vec2D(-1, 0)
-        if collision_vec.dot(ball1.get_next_velocity()) > 0:
-            ball1.collide(ball1.get_next_velocity().add(util.Vec2D(-2 * ball1.get_next_velocity().get_x(), 0)))
+        if collision_vec.dot(ball1.get_velocity()) > 0:
+            ball1.collide(ball1.get_velocity().add(util.Vec2D(-2 * ball1.get_velocity().get_x(), 0)))
     elif ball1.get_position().get_x() >= util.WINDOW_WIDTH - ball1.get_radius():
         collision_vec = util.Vec2D(1, 0)
-        if collision_vec.dot(ball1.get_next_velocity()) > 0:
-            ball1.collide(ball1.get_next_velocity().add(util.Vec2D(-2 * ball1.get_next_velocity().get_x(), 0)))
+        if collision_vec.dot(ball1.get_velocity()) > 0:
+            ball1.collide(ball1.get_velocity().add(util.Vec2D(-2 * ball1.get_velocity().get_x(), 0)))
     if ball1.get_position().get_y() <= 0 + ball1.get_radius():
         collision_vec = util.Vec2D(0, -1)
-        if collision_vec.dot(ball1.get_next_velocity()) > 0:
-            ball1.collide(ball1.get_next_velocity().add(util.Vec2D(0, -2 * ball1.get_next_velocity().get_y())))
+        if collision_vec.dot(ball1.get_velocity()) > 0:
+            ball1.collide(ball1.get_velocity().add(util.Vec2D(0, -2 * ball1.get_velocity().get_y())))
     elif ball1.get_position().get_y() >= util.WINDOW_HEIGHT - ball1.get_radius():
         collision_vec = util.Vec2D(0, 1)
-        if collision_vec.dot(ball1.get_next_velocity()) > 0:
-            ball1.collide(ball1.get_next_velocity().add(util.Vec2D(0, -2 * ball1.get_next_velocity().get_y())))
+        if collision_vec.dot(ball1.get_velocity()) > 0:
+            ball1.collide(ball1.get_velocity().add(util.Vec2D(0, -2 * ball1.get_velocity().get_y())))
 
 
 def draw_quadtree(window, quadtree):

@@ -25,7 +25,7 @@ DRAW_VELOCITY = False
 DRAW_QUADTREE = False
 LABEL_OBJECTS = False
 CONTINUOUS = True
-COLOR_SCHEME = "gradient"     # bounce, random, gradient, speed (enumerators were released in python 3.4)
+COLOR_SCHEME = "random"     # bounce, random, gradient, speed (enumerators were released in python 3.4)
 
 
 def get_seed():
