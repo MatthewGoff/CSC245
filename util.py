@@ -11,7 +11,7 @@ WINDOW_HEIGHT = 480*2
 WINDOW_COLOR = pygame.Color("black")
 
 # Ball parameters
-NUM_BALLS = 100
+NUM_BALLS = 50
 INITIAL_SPEED = 2.0        # pixels per "tick"
 RADIUS_RANGE = (10, 50)    # in pixels
 
@@ -20,12 +20,17 @@ DRAG = False
 DRAG_COEFFICIENT = -0.0005  # Try making it positive ;)
 INVERSE_MASS = False
 
+# Play parameters
+PADDLE_SPEED = 10
+PADDLE_HEIGHT = 300
+PADDLE_WIDTH = 20
+
 # Display parameters
 DRAW_VELOCITY = False
 DRAW_QUADTREE = False
 LABEL_OBJECTS = False
 CONTINUOUS = True
-COLOR_SCHEME = "random"     # bounce, random, gradient, speed (enumerators were released in python 3.4)
+COLOR_SCHEME = "gradient"     # bounce, random, gradient, speed (enumerators were released in python 3.4)
 
 
 def get_seed():
@@ -54,25 +59,29 @@ def list_to_string(list):
 class Vec2D:
 
     def __init__(self, x, y):
-        self.vec = (x, y)
+        self.x = x
+        self.y = y
 
-    def add(self, other):
-        return Vec2D(self.get_x() + other.get_x(), self.get_y() + other.get_y())
+    def __add__(self, other):
+        return Vec2D(self.x + other.x, self.y + other.y)
 
-    def sub(self, other):
-        return Vec2D(self.get_x() - other.get_x(), self.get_y() - other.get_y())
+    def __sub__(self, other):
+        return Vec2D(self.x - other.x, self.y - other.y)
 
-    def scale(self, scalar):
-        return Vec2D(self.get_x() * scalar, self.get_y() * scalar)
+    def __mul__(self, scalar):
+        return Vec2D(self.x * scalar, self.y * scalar)
+
+    def __div__(self, scalar):
+        return Vec2D(self.x / scalar, self.y / scalar)
 
     def dot(self, other):
-        return self.get_x()*other.get_x()+self.get_y()*other.get_y()
+        return self.x*other.x+self.y*other.y
 
     def get_x(self):
-        return self.vec[0]
+        return self.x
 
     def get_y(self):
-        return self.vec[1]
+        return self.y
 
     def mag(self):
         return (self.get_x()**2+self.get_y()**2)**.5
@@ -81,10 +90,13 @@ class Vec2D:
         if self.mag() == 0:
             return Vec2D(0, 0)
         else:
-            return self.scale(1.0/self.mag())
+            return self/self.mag()
 
     def perp(self):
-        return Vec2D(-1 * self.get_y(), self.get_x())
+        return Vec2D(-1 * self.y, self.x)
+
+    def to_tuple(self):
+        return self.x, self.y
 
     def __str__(self):
         return "<"+str(self.get_x())+","+str(self.get_y())+">"

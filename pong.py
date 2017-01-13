@@ -10,6 +10,19 @@ def run_game():
 
     window = pygame.display.set_mode((util.WINDOW_WIDTH, util.WINDOW_HEIGHT))
 
+    # Initialize Paddles:
+    paddle1 = objects.Paddle(util.Vec2D(50, int(util.WINDOW_HEIGHT/2)),
+                             util.Vec2D(0, 0),
+                             util.PADDLE_HEIGHT,
+                             util.PADDLE_WIDTH,
+                             pygame.Color("white"))
+
+    paddle2 = objects.Paddle(util.Vec2D(util.WINDOW_WIDTH-50, int(util.WINDOW_HEIGHT / 2)),
+                             util.Vec2D(0, 0),
+                             util.PADDLE_HEIGHT,
+                             util.PADDLE_WIDTH,
+                             pygame.Color("white"))
+
     # Initialize balls
     my_balls = []
     for i in range(0, util.NUM_BALLS):
@@ -40,13 +53,21 @@ def run_game():
 
         keys = pygame.key.get_pressed()
 
-        if keys[pygame.K_UP]:
-            print "up"
-
-        if keys[pygame.K_DOWN]:
-            print "down"
-
         if advance:
+
+            if keys[pygame.K_UP]:
+                paddle2.set_velocity(util.Vec2D(0, -1*util.PADDLE_SPEED))
+            elif keys[pygame.K_DOWN]:
+                paddle2.set_velocity(util.Vec2D(0, util.PADDLE_SPEED))
+            else:
+                paddle2.set_velocity(util.Vec2D(0, 0))
+
+            if keys[pygame.K_w]:
+                paddle1.set_velocity(util.Vec2D(0, -1*util.PADDLE_SPEED))
+            elif keys[pygame.K_s]:
+                paddle1.set_velocity(util.Vec2D(0, util.PADDLE_SPEED))
+            else:
+                paddle1.set_velocity(util.Vec2D(0, 0))
 
             # 2. Apply rules of game world
             for ball in my_balls:
@@ -61,9 +82,27 @@ def run_game():
             # 3. Simulate the world
             for ball in my_balls:
                 ball.simulate()
+            paddle1.simulate()
+            paddle2.simulate()
 
             # 4. Draw
             window.fill(util.WINDOW_COLOR)
+
+            pygame.draw.rect(window,
+                             paddle1.get_color(),
+                             pygame.Rect(paddle1.get_left(),
+                                         paddle1.get_top(),
+                                         paddle1.get_width(),
+                                         paddle1.get_height()),
+                             0)
+
+            pygame.draw.rect(window,
+                             paddle2.get_color(),
+                             pygame.Rect(paddle2.get_left(),
+                                         paddle2.get_top(),
+                                         paddle2.get_width(),
+                                         paddle2.get_height()),
+                             0)
 
             for ball in my_balls:
                 draw_ball(window, ball)
@@ -93,7 +132,7 @@ def test_collision(ball_1, ball_2):
     if ball_1 == ball_2:
         return
 
-    normal = ball_2.get_position().sub(ball_1.get_position())  # towards ball_2
+    normal = ball_2.get_position() - ball_1.get_position()  # towards ball_2
 
     if normal.mag() > (ball_1.get_radius() + ball_2.get_radius()):
         return
@@ -119,13 +158,13 @@ def test_collision(ball_1, ball_2):
     v2norm_mag_f = (v2norm_mag * (m2 - m1) + 2 * m1 * v1norm_mag) / (m1 + m2)
     v2tang_mag_f = v2tang_mag
 
-    v1norm = unit_norm.scale(v1norm_mag_f)
-    v1tang = unit_tang.scale(v1tang_mag_f)
-    v2norm = unit_norm.scale(v2norm_mag_f)
-    v2tang = unit_tang.scale(v2tang_mag_f)
+    v1norm = unit_norm*v1norm_mag_f
+    v1tang = unit_tang*v1tang_mag_f
+    v2norm = unit_norm*v2norm_mag_f
+    v2tang = unit_tang*v2tang_mag_f
 
-    ball_1.collide(v1norm.add(v1tang))
-    ball_2.collide(v2norm.add(v2tang))
+    ball_1.collide(v1norm+v1tang)
+    ball_2.collide(v2norm+v2tang)
 
 
 def collide_walls(ball1):
@@ -133,19 +172,19 @@ def collide_walls(ball1):
     if ball1.get_position().get_x() <= 0 + ball1.get_radius():
         collision_vec = util.Vec2D(-1, 0)
         if collision_vec.dot(ball1.get_velocity()) > 0:
-            ball1.collide(ball1.get_velocity().add(util.Vec2D(-2 * ball1.get_velocity().get_x(), 0)))
+            ball1.collide(ball1.get_velocity()+util.Vec2D(-2 * ball1.get_velocity().get_x(), 0))
     elif ball1.get_position().get_x() >= util.WINDOW_WIDTH - ball1.get_radius():
         collision_vec = util.Vec2D(1, 0)
         if collision_vec.dot(ball1.get_velocity()) > 0:
-            ball1.collide(ball1.get_velocity().add(util.Vec2D(-2 * ball1.get_velocity().get_x(), 0)))
+            ball1.collide(ball1.get_velocity()+util.Vec2D(-2 * ball1.get_velocity().get_x(), 0))
     if ball1.get_position().get_y() <= 0 + ball1.get_radius():
         collision_vec = util.Vec2D(0, -1)
         if collision_vec.dot(ball1.get_velocity()) > 0:
-            ball1.collide(ball1.get_velocity().add(util.Vec2D(0, -2 * ball1.get_velocity().get_y())))
+            ball1.collide(ball1.get_velocity()+util.Vec2D(0, -2 * ball1.get_velocity().get_y()))
     elif ball1.get_position().get_y() >= util.WINDOW_HEIGHT - ball1.get_radius():
         collision_vec = util.Vec2D(0, 1)
         if collision_vec.dot(ball1.get_velocity()) > 0:
-            ball1.collide(ball1.get_velocity().add(util.Vec2D(0, -2 * ball1.get_velocity().get_y())))
+            ball1.collide(ball1.get_velocity()+util.Vec2D(0, -2 * ball1.get_velocity().get_y()))
 
 
 def draw_quadtree(window, quadtree):
@@ -198,8 +237,7 @@ def draw_ball(window, ball):
                            ball.get_radius())
 
     if util.DRAW_VELOCITY:
-        vel = ball.get_velocity().scale(50)
-        vec = pos.add(vel)
+        vec = pos+50*ball.get_velocity()
         pygame.draw.line(window, pygame.Color("white"), (pos.get_x(), pos.get_y()), (vec.get_x(), vec.get_y()), 1)
 
 
