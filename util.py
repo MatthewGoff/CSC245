@@ -11,8 +11,8 @@ WINDOW_HEIGHT = 480*2
 WINDOW_COLOR = pygame.Color("black")
 
 # Ball parameters
-NUM_BALLS = 50
-INITIAL_SPEED = 2.0        # pixels per "tick"
+NUM_BALLS = 10
+INITIAL_SPEED = 1        # pixels per "tick"
 RADIUS_RANGE = (10, 50)    # in pixels
 
 # Physics parameters
@@ -21,16 +21,16 @@ DRAG_COEFFICIENT = -0.0005  # Try making it positive ;)
 INVERSE_MASS = False
 
 # Play parameters
-PADDLE_SPEED = 10
+PADDLE_SPEED = 3
 PADDLE_HEIGHT = 300
 PADDLE_WIDTH = 20
 
 # Display parameters
-DRAW_VELOCITY = False
+DRAW_VELOCITY = True
 DRAW_QUADTREE = False
 LABEL_OBJECTS = False
 CONTINUOUS = True
-COLOR_SCHEME = "gradient"     # bounce, random, gradient, speed (enumerators were released in python 3.4)
+COLOR_SCHEME = "random"     # bounce, random, gradient, speed (enumerators were released in python 3.4)
 
 
 def get_seed():
@@ -44,13 +44,13 @@ def random_color():
                         255)
 
 
-def list_to_string(list):
+def list_to_string(ls):
     string = "["
-    for i in range(0, len(list)-1):
-        string += str(list[i])+","
+    for i in range(0, len(ls)-1):
+        string += str(ls[i])+","
 
-    if len(list) != 0:
-        string += str(list[-1])
+    if len(ls) != 0:
+        string += str(ls[-1])
 
     string += "]"
     return string
@@ -77,17 +77,14 @@ class Vec2D:
     def dot(self, other):
         return self.x*other.x+self.y*other.y
 
-    def get_x(self):
-        return self.x
-
-    def get_y(self):
-        return self.y
-
     def mag(self):
         return (self.get_x()**2+self.get_y()**2)**.5
 
+    def is_zero(self):
+        return self.x == 0 and self.y == 0
+
     def unit(self):
-        if self.mag() == 0:
+        if self.is_zero():
             return Vec2D(0, 0)
         else:
             return self/self.mag()
@@ -97,6 +94,12 @@ class Vec2D:
 
     def to_tuple(self):
         return self.x, self.y
+
+    def get_y(self):
+        return self.y
+
+    def get_x(self):
+        return self.x
 
     def __str__(self):
         return "<"+str(self.get_x())+","+str(self.get_y())+">"
@@ -191,6 +194,10 @@ class Quadtree:
                 return 2
 
         return -1
+
+    def insert_many(self, list):
+        for e in list:
+            self.insert(e)
 
     def insert(self, member):
         if self.nodes[0] is not None:

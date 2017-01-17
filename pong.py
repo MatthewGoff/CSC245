@@ -10,7 +10,6 @@ def run_game():
 
     window = pygame.display.set_mode((util.WINDOW_WIDTH, util.WINDOW_HEIGHT))
 
-    # Initialize Paddles:
     paddle1 = objects.Paddle(util.Vec2D(50, int(util.WINDOW_HEIGHT/2)),
                              util.Vec2D(0, 0),
                              util.PADDLE_HEIGHT,
@@ -23,7 +22,31 @@ def run_game():
                              util.PADDLE_WIDTH,
                              pygame.Color("white"))
 
-    # Initialize balls
+    boarders = [objects.Wall(util.Vec2D(0, util.WINDOW_HEIGHT/2),
+                             util.Vec2D(0, 0),
+                             util.Vec2D(1, 0),
+                             util.WINDOW_HEIGHT,
+                             0,
+                             goal),
+                objects.Wall(util.Vec2D(util.WINDOW_WIDTH/2, 0),
+                             util.Vec2D(0, 0),
+                             util.Vec2D(0, 1),
+                             util.WINDOW_WIDTH,
+                             0,
+                             goal),
+                objects.Wall(util.Vec2D(util.WINDOW_WIDTH, util.WINDOW_HEIGHT/2),
+                             util.Vec2D(0, 0),
+                             util.Vec2D(-1, 0),
+                             util.WINDOW_HEIGHT,
+                             0,
+                             goal),
+                objects.Wall(util.Vec2D(util.WINDOW_WIDTH/2, util.WINDOW_HEIGHT),
+                             util.Vec2D(0, 0),
+                             util.Vec2D(0, -1),
+                             util.WINDOW_WIDTH,
+                             0,
+                             goal)]
+
     my_balls = []
     for i in range(0, util.NUM_BALLS):
         radius = util.RandGen.randint(util.RADIUS_RANGE[0], util.RADIUS_RANGE[1])
@@ -51,9 +74,9 @@ def run_game():
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                 advance = True
 
-        keys = pygame.key.get_pressed()
-
         if advance:
+
+            keys = pygame.key.get_pressed()
 
             if keys[pygame.K_UP]:
                 paddle2.set_velocity(util.Vec2D(0, -1*util.PADDLE_SPEED))
@@ -74,10 +97,13 @@ def run_game():
                 quadtree.insert(ball)
 
             for ball in my_balls:
-                collide_walls(ball)
                 neighbors = quadtree.get_neighbors(ball)
                 for neighbor in neighbors:
-                    test_collision(ball, neighbor)
+                    test_ball_collision(ball, neighbor)
+
+                walls = paddle1.get_walls()+paddle2.get_walls()+boarders
+                for wall in walls:
+                    test_wall_collision(wall, ball)
 
             # 3. Simulate the world
             for ball in my_balls:
@@ -88,21 +114,8 @@ def run_game():
             # 4. Draw
             window.fill(util.WINDOW_COLOR)
 
-            pygame.draw.rect(window,
-                             paddle1.get_color(),
-                             pygame.Rect(paddle1.get_left(),
-                                         paddle1.get_top(),
-                                         paddle1.get_width(),
-                                         paddle1.get_height()),
-                             0)
-
-            pygame.draw.rect(window,
-                             paddle2.get_color(),
-                             pygame.Rect(paddle2.get_left(),
-                                         paddle2.get_top(),
-                                         paddle2.get_width(),
-                                         paddle2.get_height()),
-                             0)
+            draw_paddle(window, paddle1)
+            draw_paddle(window, paddle2)
 
             for ball in my_balls:
                 draw_ball(window, ball)
@@ -126,7 +139,57 @@ def run_game():
     pygame.quit()
 
 
-def test_collision(ball_1, ball_2):
+def goal():
+    print "Goal!"
+
+
+def test_wall_collision(wall, ball):
+
+    normal = ball.get_position()-wall.get_position()
+
+    unit_norm = wall.get_norm()
+    unit_tang = wall.get_tang()
+
+    norm_mag = normal.dot(unit_norm)
+    tang_mag = abs(normal.dot(unit_tang))
+
+    if abs(norm_mag) > ball.get_radius() or tang_mag > (wall.get_width()/2+ball.get_radius()):
+        return
+
+    m1 = wall.get_mass()
+    m2 = ball.get_mass()
+    v1 = wall.get_velocity()
+    v2 = ball.get_velocity()
+
+    v1norm_mag = v1.dot(unit_norm)
+    v1tang_mag = v1.dot(unit_tang)
+    v2norm_mag = v2.dot(unit_norm)
+    v2tang_mag = v2.dot(unit_tang)
+
+    if v1norm_mag - v2norm_mag < 0:
+        return
+
+    if m1 == float("inf"):
+        v1norm_mag_f = v1norm_mag
+        v1tang_mag_f = v1tang_mag
+        v2norm_mag_f = -1*v2norm_mag
+        v2tang_mag_f = v2tang_mag
+    else:
+        v1norm_mag_f = (v1norm_mag * (m1 - m2) + 2 * m2 * v2norm_mag) / (m1 + m2)
+        v1tang_mag_f = v1tang_mag
+        v2norm_mag_f = (v2norm_mag * (m2 - m1) + 2 * m1 * v1norm_mag) / (m1 + m2)
+        v2tang_mag_f = v2tang_mag
+
+    v1norm = unit_norm * v1norm_mag_f
+    v1tang = unit_tang * v1tang_mag_f
+    v2norm = unit_norm * v2norm_mag_f
+    v2tang = unit_tang * v2tang_mag_f
+
+    ball.collide(v2norm + v2tang)
+    wall.collide()
+
+
+def test_ball_collision(ball_1, ball_2):
     # see if these two balls have collided and if so calc result
 
     if ball_1 == ball_2:
@@ -166,27 +229,6 @@ def test_collision(ball_1, ball_2):
     ball_1.collide(v1norm+v1tang)
     ball_2.collide(v2norm+v2tang)
 
-
-def collide_walls(ball1):
-    # see if the ball has collided with any walls and if so calc result
-    if ball1.get_position().get_x() <= 0 + ball1.get_radius():
-        collision_vec = util.Vec2D(-1, 0)
-        if collision_vec.dot(ball1.get_velocity()) > 0:
-            ball1.collide(ball1.get_velocity()+util.Vec2D(-2 * ball1.get_velocity().get_x(), 0))
-    elif ball1.get_position().get_x() >= util.WINDOW_WIDTH - ball1.get_radius():
-        collision_vec = util.Vec2D(1, 0)
-        if collision_vec.dot(ball1.get_velocity()) > 0:
-            ball1.collide(ball1.get_velocity()+util.Vec2D(-2 * ball1.get_velocity().get_x(), 0))
-    if ball1.get_position().get_y() <= 0 + ball1.get_radius():
-        collision_vec = util.Vec2D(0, -1)
-        if collision_vec.dot(ball1.get_velocity()) > 0:
-            ball1.collide(ball1.get_velocity()+util.Vec2D(0, -2 * ball1.get_velocity().get_y()))
-    elif ball1.get_position().get_y() >= util.WINDOW_HEIGHT - ball1.get_radius():
-        collision_vec = util.Vec2D(0, 1)
-        if collision_vec.dot(ball1.get_velocity()) > 0:
-            ball1.collide(ball1.get_velocity()+util.Vec2D(0, -2 * ball1.get_velocity().get_y()))
-
-
 def draw_quadtree(window, quadtree):
     if quadtree.is_split():
         bounds = quadtree.get_bounds()
@@ -206,13 +248,23 @@ def draw_quadtree(window, quadtree):
     draw_text(window, str(quadtree.get_population()), quadtree.get_bounds().get_center())
 
 
+def draw_paddle(window, paddle):
+    pygame.draw.rect(window,
+                     paddle.get_color(),
+                     pygame.Rect(paddle.get_left(),
+                                 paddle.get_top(),
+                                 paddle.get_width(),
+                                 paddle.get_height()),
+                     0)
+
+
 def draw_ball(window, ball):
     pos = ball.get_position()
     color = ball.get_color()
 
     if util.COLOR_SCHEME == "gradient" or util.COLOR_SCHEME == "speed":
-        r = int(255 * pos.get_x() / util.WINDOW_WIDTH)
-        g = int(255 * pos.get_y() / util.WINDOW_HEIGHT)
+        r = int(255 * pos.to_tuple()[0] / util.WINDOW_WIDTH)
+        g = int(255 * pos.to_tuple()[1] / util.WINDOW_HEIGHT)
         b = int(255 * ball.get_radius() / util.RADIUS_RANGE[1])
 
         r = min(max(0, r), 255)  # encase it shoots over
@@ -228,25 +280,25 @@ def draw_ball(window, ball):
             pygame.draw.circle(s, color, (ball.get_radius(), ball.get_radius()), ball.get_radius())
             s.set_alpha(int((ball.get_velocity().mag() * 500) % 255))
 
-            window.blit(s, (int(pos.get_x() - ball.get_radius()),int(pos.get_y() - ball.get_radius())))
+            window.blit(s, (int(pos.to_tuple()[0] - ball.get_radius()),int(pos.to_tuple()[1] - ball.get_radius())))
 
     if util.COLOR_SCHEME != "speed":
         pygame.draw.circle(window,
                            color,
-                           (int(pos.get_x()), int(pos.get_y())),
+                           (int(pos.to_tuple()[0]), int(pos.to_tuple()[1])),
                            ball.get_radius())
 
     if util.DRAW_VELOCITY:
-        vec = pos+50*ball.get_velocity()
-        pygame.draw.line(window, pygame.Color("white"), (pos.get_x(), pos.get_y()), (vec.get_x(), vec.get_y()), 1)
+        vec = pos+ball.get_velocity()*50
+        pygame.draw.line(window, pygame.Color("white"), pos.to_tuple(), vec.to_tuple(), 1)
 
 
 def draw_text(window, text_param, center):
     basic_font = pygame.font.SysFont(None, 24)
     text = basic_font.render(text_param, True, (255, 255, 255), (0, 0, 0))
     text_rect = text.get_rect()
-    text_rect.centerx = center.get_x()
-    text_rect.centery = center.get_y()
+    text_rect.centerx = center.to_tuple()[0]
+    text_rect.centery = center.to_tuple()[1]
     window.blit(text, text_rect)
 
 # Start game
