@@ -2,15 +2,24 @@ from math import pi
 import util
 
 
-class Ball:
-    def __init__(self, position, velocity, color, radius, name):
+class GameObject(object):
+
+    def get_id(self):
+        return self.identifier
+
+    def __str__(self):
+        return "("+str(self.identifier)+")"
+
+
+class Ball(GameObject):
+    def __init__(self, position, velocity, color, radius, identifier):
         self.position = position
         self.velocity = velocity
         self.color = color
         self.radius = radius
-        self.name = name
+        self.identifier = identifier
 
-    def collide(self, next_velocity):
+    def collide(self, next_velocity, partner):
         if util.COLOR_SCHEME == "bounce":
             self.color = util.random_color()
         self.velocity = next_velocity
@@ -39,17 +48,15 @@ class Ball:
         else:
             return pi*self.get_radius()**2
 
-    def __str__(self):
-        return "("+str(self.name)+")"
 
-
-class Paddle:
-    def __init__(self, position, velocity, height, width, color):
+class Paddle(GameObject):
+    def __init__(self, position, velocity, height, width, color, identifier):
         self.position = position
         self.velocity = velocity
         self.height = height
         self.width = width
         self.color = color
+        self.identifier = identifier
         self.mass = width*height
 
         self.walls = [Wall((self.position+util.Vec2D(width/2, 0)),
@@ -57,24 +64,28 @@ class Paddle:
                            util.Vec2D(1, 0),
                            height,
                            float("inf"),
+                           "right",
                            self.notify_collision),
                       Wall(self.position+util.Vec2D(0, -height/2),
                            velocity,
                            util.Vec2D(0, -1),
                            width,
                            self.mass,
+                           "top",
                            self.notify_collision),
                       Wall(self.position+util.Vec2D(-width/2, 0),
                            velocity,
                            util.Vec2D(-1, 0),
                            height,
                            float("inf"),
+                           "left",
                            self.notify_collision),
                       Wall(self.position+util.Vec2D(0, height/2),
                            velocity,
                            util.Vec2D(0, 1),
                            width,
                            self.mass,
+                           "bottom",
                            self.notify_collision)]
 
     def get_position(self):
@@ -117,29 +128,30 @@ class Paddle:
     def get_color(self):
         return self.color
 
-    def notify_collision(self):
-        print "collision on paddle"
+    def notify_collision(self, wall, other):
+        self.velocity = wall.get_velocity()
 
     def get_walls(self):
         return self.walls
 
 
-
-class Wall:
-    def __init__(self, position, velocity, normal, width, mass, listener):
+class Wall(GameObject):
+    def __init__(self, position, velocity, normal, width, mass, identifier, listener):
         self.position = position
         self.velocity = velocity
         self.normal = normal
         self.width = width
         self.mass = mass
+        self.identifier = identifier
         self.listeners = [listener]
 
     def add_listeners(self, listener):
         self.listeners += [listener]
 
-    def collide(self):
+    def collide(self, velocity, partner):
+        self.velocity = velocity
         for listener in self.listeners:
-            listener()
+            listener(self, partner)
 
     def set_velocity(self, velocity):
         self.velocity = velocity
@@ -167,3 +179,6 @@ class Wall:
             return float("inf")
         else:
             return self.mass
+
+    def get_radius(self):
+        return self.width

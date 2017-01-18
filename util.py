@@ -3,6 +3,7 @@ import sys
 import pygame
 
 seed = random.randint(0, sys.maxint)
+#seed = 1062520888
 RandGen = random.Random(seed)
 
 # Window Parameters
@@ -12,7 +13,7 @@ WINDOW_COLOR = pygame.Color("black")
 
 # Ball parameters
 NUM_BALLS = 10
-INITIAL_SPEED = 1        # pixels per "tick"
+SPEED_RANGE = (.5,1)        # pixels per "tick"
 RADIUS_RANGE = (10, 50)    # in pixels
 
 # Physics parameters
@@ -26,7 +27,7 @@ PADDLE_HEIGHT = 300
 PADDLE_WIDTH = 20
 
 # Display parameters
-DRAW_VELOCITY = True
+DRAW_VELOCITY = False
 DRAW_QUADTREE = False
 LABEL_OBJECTS = False
 CONTINUOUS = True
@@ -42,6 +43,17 @@ def random_color():
                         RandGen.randint(0, 255),
                         RandGen.randint(0, 255),
                         255)
+
+
+def random_velocity():
+    x_mag = RandGen.uniform(SPEED_RANGE[0], SPEED_RANGE[1])
+    y_mag = RandGen.uniform(SPEED_RANGE[0], SPEED_RANGE[1])
+    if RandGen.uniform(0, 1) > 0.5:
+        x_mag *= -1
+    if RandGen.uniform(0, 1) > 0.5:
+        y_mag *= -1
+
+    return Vec2D(x_mag, y_mag)
 
 
 def list_to_string(ls):
@@ -195,8 +207,8 @@ class Quadtree:
 
         return -1
 
-    def insert_many(self, list):
-        for e in list:
+    def insert_many(self, ls):
+        for e in ls:
             self.insert(e)
 
     def insert(self, member):
