@@ -1,5 +1,5 @@
-# PongExperiment
-Class Project
+# CSC245
+Repository for games and projects in CSC245
 
 TODO:
 - Change the quadtree so garbage collection is more efficient
