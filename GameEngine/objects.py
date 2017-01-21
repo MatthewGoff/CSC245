@@ -1,6 +1,8 @@
 from math import pi
-import util
+
 import pygame
+
+import util
 
 
 class GameObject(object):
@@ -118,7 +120,7 @@ class Block(GameObject):
         self.color = color
         self.mass = width*height
 
-        self.walls = [Wall((self.position+util.Vec2D(width/2, 0)),
+        self.walls = [Wall((self.position + util.Vec2D(width / 2, 0)),
                            velocity,
                            util.Vec2D(1, 0),
                            height,
@@ -126,7 +128,7 @@ class Block(GameObject):
                            self.color,
                            "right",
                            self.notify_collision),
-                      Wall(self.position+util.Vec2D(0, -height/2),
+                      Wall(self.position + util.Vec2D(0, -height / 2),
                            velocity,
                            util.Vec2D(0, -1),
                            width,
@@ -134,7 +136,7 @@ class Block(GameObject):
                            self.color,
                            "top",
                            self.notify_collision),
-                      Wall(self.position+util.Vec2D(-width/2, 0),
+                      Wall(self.position + util.Vec2D(-width / 2, 0),
                            velocity,
                            util.Vec2D(-1, 0),
                            height,
@@ -142,7 +144,7 @@ class Block(GameObject):
                            self.color,
                            "left",
                            self.notify_collision),
-                      Wall(self.position+util.Vec2D(0, height/2),
+                      Wall(self.position + util.Vec2D(0, height / 2),
                            velocity,
                            util.Vec2D(0, 1),
                            width,
