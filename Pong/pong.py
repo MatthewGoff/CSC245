@@ -1,6 +1,6 @@
 import pygame
-import objects
-import util
+
+from GameEngine import objects, util
 
 
 class PongGame:
@@ -51,7 +51,7 @@ class PongGame:
                                               window_bounds,
                                               pygame.Color("white"),
                                               "paddle2")
-        self.left_wall = objects.Wall(util.Vec2D(0, self.window_height/2),
+        self.left_wall = objects.Wall(util.Vec2D(0, self.window_height / 2),
                                       util.Vec2D(0, 0),
                                       util.Vec2D(1, 0),
                                       self.window_height,
@@ -59,7 +59,7 @@ class PongGame:
                                       pygame.Color("white"),
                                       "left wall",
                                       self.notify_collision)
-        self.top_wall = objects.Wall(util.Vec2D(self.window_width/2, 0),
+        self.top_wall = objects.Wall(util.Vec2D(self.window_width / 2, 0),
                                      util.Vec2D(0, 0),
                                      util.Vec2D(0, 1),
                                      self.window_width,
@@ -67,7 +67,7 @@ class PongGame:
                                      pygame.Color("white"),
                                      "top wall",
                                      self.notify_collision)
-        self.bottom_wall = objects.Wall(util.Vec2D(self.window_width/2, self.window_height),
+        self.bottom_wall = objects.Wall(util.Vec2D(self.window_width / 2, self.window_height),
                                         util.Vec2D(0, 0),
                                         util.Vec2D(0, -1),
                                         self.window_width,
@@ -117,14 +117,14 @@ class PongGame:
             keys = pygame.key.get_pressed()
 
             if keys[pygame.K_UP]:
-                self.paddle2.set_velocity(util.Vec2D(0, -1*PongGame.PADDLE_SPEED))
+                self.paddle2.set_velocity(util.Vec2D(0, -1 * PongGame.PADDLE_SPEED))
             elif keys[pygame.K_DOWN]:
                 self.paddle2.set_velocity(util.Vec2D(0, PongGame.PADDLE_SPEED))
             else:
                 self.paddle2.set_velocity(util.Vec2D(0, 0))
 
             if keys[pygame.K_w]:
-                self.paddle1.set_velocity(util.Vec2D(0, -1*PongGame.PADDLE_SPEED))
+                self.paddle1.set_velocity(util.Vec2D(0, -1 * PongGame.PADDLE_SPEED))
             elif keys[pygame.K_s]:
                 self.paddle1.set_velocity(util.Vec2D(0, PongGame.PADDLE_SPEED))
             else:
