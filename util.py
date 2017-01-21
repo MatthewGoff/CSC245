@@ -3,35 +3,12 @@ import sys
 import pygame
 
 seed = random.randint(0, sys.maxint)
-#seed = 1062520888
+#seed = 949109774
 RandGen = random.Random(seed)
-
-# Window Parameters
-WINDOW_WIDTH = 640*2
-WINDOW_HEIGHT = 480*2
-WINDOW_COLOR = pygame.Color("black")
-
-# Ball parameters
-NUM_BALLS = 10
-SPEED_RANGE = (.5,1)        # pixels per "tick"
-RADIUS_RANGE = (10, 50)    # in pixels
 
 # Physics parameters
 DRAG = False
 DRAG_COEFFICIENT = -0.0005  # Try making it positive ;)
-INVERSE_MASS = False
-
-# Play parameters
-PADDLE_SPEED = 3
-PADDLE_HEIGHT = 300
-PADDLE_WIDTH = 20
-
-# Display parameters
-DRAW_VELOCITY = False
-DRAW_QUADTREE = False
-LABEL_OBJECTS = False
-CONTINUOUS = True
-COLOR_SCHEME = "random"     # bounce, random, gradient, speed (enumerators were released in python 3.4)
 
 
 def get_seed():
@@ -45,9 +22,9 @@ def random_color():
                         255)
 
 
-def random_velocity():
-    x_mag = RandGen.uniform(SPEED_RANGE[0], SPEED_RANGE[1])
-    y_mag = RandGen.uniform(SPEED_RANGE[0], SPEED_RANGE[1])
+def random_velocity(range):
+    x_mag = RandGen.uniform(range[0], range[1])
+    y_mag = RandGen.uniform(range[0], range[1])
     if RandGen.uniform(0, 1) > 0.5:
         x_mag *= -1
     if RandGen.uniform(0, 1) > 0.5:
@@ -127,6 +104,13 @@ class Rectangle:
 
         self.v_median = (self.top + self.bottom) / 2.0
         self.h_median = (self.left + self.right) / 2.0
+
+    @classmethod
+    def from_pygame_rect(cls, pygame_rect):
+        return cls(pygame_rect.top,
+                   pygame_rect.bottom,
+                   pygame_rect.left,
+                   pygame_rect.right)
 
     def get_top(self):
         return self.top
