@@ -6,5 +6,7 @@ TODO:
 - Eliminate redundant collision checks (top down quadtree iteration)
 - Introduce dynamic time steps
 - Make Quad tree responsible for collisions
-- Make collision agnostic to object type
-
+- Remove setters and getters (More pythonic ?)
+- Max speed, after which there is drag
+- Check type of inheritance
+- Fix phantom collision nonsense

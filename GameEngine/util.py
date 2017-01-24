@@ -178,15 +178,15 @@ class Quadtree:
 
     def get_index(self, member):
 
-        if member.get_position().get_y() < (self.bounds.get_v_median() - member.get_radius()):
-            if member.get_position().get_x() > (self.bounds.get_h_median() + member.get_radius()):
+        if member.get_bottom() < self.bounds.get_v_median():
+            if member.get_left() > self.bounds.get_h_median():
                 return 0
-            elif member.get_position().get_x() < (self.bounds.get_h_median() - member.get_radius()):
+            elif member.get_right() < self.bounds.get_h_median():
                 return 1
-        elif member.get_position().get_y() > (self.bounds.get_v_median() + member.get_radius()):
-            if member.get_position().get_x() > (self.bounds.get_h_median() + member.get_radius()):
+        elif member.get_top() > self.bounds.get_v_median():
+            if member.get_left() > self.bounds.get_h_median():
                 return 3
-            elif member.get_position().get_x() < (self.bounds.get_h_median() - member.get_radius()):
+            elif member.get_right() < self.bounds.get_h_median():
                 return 2
 
         return -1
@@ -249,5 +249,36 @@ class Quadtree:
             string += "(Not split)"
 
         return string
+
+
+def draw_quadtree(window, quadtree):
+    if quadtree.is_split():
+        bounds = quadtree.get_bounds()
+        pygame.draw.line(window,
+                         pygame.color.Color("white"),
+                         (bounds.get_h_median(), bounds.get_top()),
+                         (bounds.get_h_median(), bounds.get_bottom()),
+                         1)
+        pygame.draw.line(window,
+                         pygame.color.Color("white"),
+                         (bounds.get_left(), bounds.get_v_median()),
+                         (bounds.get_right(), bounds.get_v_median()),
+                         1)
+        for i in range(0, 4):
+            draw_quadtree(window, quadtree.get_nodes()[i])
+
+    draw_text(window,
+              str(quadtree.get_population()),
+              quadtree.get_bounds().get_center().to_tuple(),
+              24)
+
+
+def draw_text(window, text_param, center, size):
+    basic_font = pygame.font.SysFont(None, size)
+    text = basic_font.render(text_param, True, (255, 255, 255), (0, 0, 0))
+    text_rect = text.get_rect()
+    text_rect.centerx = center[0]
+    text_rect.centery = center[1]
+    window.blit(text, text_rect)
 
 

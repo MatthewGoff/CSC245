@@ -19,11 +19,10 @@ class GameObject(object):
 
 class Collidable(GameObject):
 
-    def __init__(self, position, velocity, radius, mass, identifier):
+    def __init__(self, position, velocity, mass, identifier):
         GameObject.__init__(self, identifier)
         self.position = position
         self.velocity = velocity
-        self.radius = radius
         self.mass = mass
 
     def get_position(self):
@@ -32,17 +31,27 @@ class Collidable(GameObject):
     def get_velocity(self):
         return self.velocity
 
-    def get_radius(self):
-        return self.radius
-
     def get_mass(self):
         return self.mass
+
+    def get_top(self):
+        pass
+
+    def get_bottom(self):
+        pass
+
+    def get_left(self):
+        pass
+
+    def get_right(self):
+        pass
 
 
 class Ball(Collidable):
 
     def __init__(self, position, velocity, radius, identifier):
-        Collidable.__init__(self, position, velocity, radius, pi*radius**2, identifier)
+        Collidable.__init__(self, position, velocity, pi*radius**2, identifier)
+        self.radius = radius
 
     def collide(self, next_velocity, partner):
         self.velocity = next_velocity
@@ -54,15 +63,29 @@ class Ball(Collidable):
         self.position += self.velocity
 
     def draw(self, window, draw_velocity):
-
         pygame.draw.circle(window,
-                           self.color,
+                           pygame.Color("red"),
                            (int(self.position.get_x()), int(self.position.get_y())),
                            self.get_radius())
 
         if draw_velocity:
             vec = self.position + self.velocity * 50
             pygame.draw.line(window, pygame.Color("white"), self.position.to_tuple(), vec.to_tuple(), 1)
+
+    def get_radius(self):
+        return self.radius
+
+    def get_top(self):
+        return self.position.get_y() - self.radius
+
+    def get_bottom(self):
+        return self.position.get_y() + self.radius
+
+    def get_left(self):
+        return self.position.get_x() - self.radius
+
+    def get_right(self):
+        return self.position.get_x() + self.radius
 
 
 class PongBall(Ball):
@@ -110,21 +133,19 @@ class PongBall(Ball):
             Ball.draw(self, window, draw_velocity)
 
 
-class Block(GameObject):
+class Block(Collidable):
     def __init__(self, position, velocity, height, width, color, identifier):
-        GameObject.__init__(self, identifier)
-        self.position = position
-        self.velocity = velocity
+
+        Collidable.__init__(self, position, velocity, width*height, identifier)
         self.height = height
         self.width = width
         self.color = color
-        self.mass = width*height
 
         self.walls = [Wall((self.position + util.Vec2D(width / 2, 0)),
                            velocity,
                            util.Vec2D(1, 0),
                            height,
-                           self.mass,
+                           float("inf"),
                            self.color,
                            "right",
                            self.notify_collision),
@@ -132,7 +153,7 @@ class Block(GameObject):
                            velocity,
                            util.Vec2D(0, -1),
                            width,
-                           self.mass,
+                           float("inf"),
                            self.color,
                            "top",
                            self.notify_collision),
@@ -140,7 +161,7 @@ class Block(GameObject):
                            velocity,
                            util.Vec2D(-1, 0),
                            height,
-                           self.mass,
+                           float("inf"),
                            self.color,
                            "left",
                            self.notify_collision),
@@ -148,7 +169,7 @@ class Block(GameObject):
                            velocity,
                            util.Vec2D(0, 1),
                            width,
-                           self.mass,
+                           float("inf"),
                            self.color,
                            "bottom",
                            self.notify_collision)]
@@ -218,6 +239,8 @@ class Block(GameObject):
                                      self.get_width(),
                                      self.get_height()),
                          0)
+        for wall in self.walls:
+            wall.draw(window)
 
 
 class VerticalPaddle(Block):
@@ -225,8 +248,6 @@ class VerticalPaddle(Block):
     def __init__(self, position, velocity, height, width, bounds, color, identifier):
         Block.__init__(self, position, velocity, height, width, color, identifier)
         self.bounds = bounds
-        self.get_right_wall().make_dense()
-        self.get_left_wall().make_dense()
 
     def simulate(self):
         self.position += self.velocity
@@ -239,11 +260,9 @@ class VerticalPaddle(Block):
 
 class HorizontalPaddle(Block):
 
-    def __init__(self, position, velocity, height, width, bounds, color, identifier):
-        Block.__init__(self, position, velocity, height, width, color, identifier)
+    def __init__(self, position, velocity, width, height, bounds, color, identifier):
+        Block.__init__(self, position, velocity, width, height, color, identifier)
         self.bounds = bounds
-        self.get_top_wall().make_dense()
-        self.get_bottom_wall().make_dense()
 
     def simulate(self):
         self.position += self.velocity
@@ -254,15 +273,54 @@ class HorizontalPaddle(Block):
                 wall.simulate()
 
 
+class Brick(Block):
+    COLORS = {3: pygame.Color("red"),
+              2: pygame.Color("blue"),
+              1: pygame.Color("green")}
+
+    def __init__(self, position, width, height, identifier):
+        self.lives = 3
+        Block.__init__(self,
+                       position,
+                       util.Vec2D(0, 0),
+                       width,
+                       height,
+                       Brick.COLORS[self.lives],
+                       identifier)
+
+        for wall in self.walls:
+            wall.color = pygame.Color("black")
+
+    def get_color(self):
+        return self.color
+
+    def notify_collision(self, wall, other):
+        self.lives -= 1
+        try:
+            self.color = Brick.COLORS[self.lives]
+        except KeyError:
+            self.color = pygame.Color("white")
+            print "Brick lives outside of range"
+
+
+    def get_lives(self):
+        return self.lives
+
 class Wall(Collidable):
-    def __init__(self, position, velocity, normal, width, mass, color, identifier, listener):
-        Collidable.__init__(self, position, velocity, width/2, mass, identifier)
+    def __init__(self,
+                 position,
+                 velocity,
+                 normal,
+                 width,
+                 mass,
+                 color,
+                 identifier,
+                 listener):
+        Collidable.__init__(self, position, velocity, mass, identifier)
+        self.radius = width/2
         self.normal = normal
         self.color = color
         self.listener = listener
-
-    def make_dense(self):
-        self.mass = float("inf")
 
     def collide(self, velocity, partner):
         self.velocity = velocity
@@ -282,4 +340,19 @@ class Wall(Collidable):
 
     def draw(self, window):
         leg = self.normal.perp()*self.radius
-        pygame.draw.line(window, self.color, self.position - leg, self.position + leg, 1)
+        pygame.draw.line(window, self.color, (self.position - leg).to_tuple(), (self.position + leg).to_tuple(), 2)
+
+    def get_top(self):
+        return self.position.get_y() - self.radius  # upper bound
+
+    def get_bottom(self):
+        return self.position.get_y() + self.radius  # upper bound
+
+    def get_left(self):
+        return self.position.get_x() - self.radius  # upper bound
+
+    def get_right(self):
+        return self.position.get_x() + self.radius  # upper bound
+
+    def get_radius(self):
+        return self.radius
