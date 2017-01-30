@@ -97,7 +97,7 @@ class AngryBirds:
 
         self.crates.add(crate)
         '''
-        currentBlocks = Level()
+        currentBlocks = Level(self.window_width, self.window_height)
         self.blocks = currentBlocks.setup(0)
         for i in self.blocks:
             for k in i:

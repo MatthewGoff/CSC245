@@ -14,7 +14,9 @@ from GameEngine import util
 
 class Level:
 
-    def __init__(self):
+    def __init__(self, window_width, window_height):
+        self.window_width = window_width
+        self.window_height = window_height
         self.levels = []
         self.level1 = [[1,400,400],[2,500,500],[3,600,600],[4,700,700],[5,800,800]]
         self.levels.append(self.level1)
@@ -37,6 +39,12 @@ class Level:
                 stones.add(Stone(util.Vec2D(500, 500),util.Vec2D(0, 0), 50, 50, "stone"))
             elif i[0] == 5:
                 ice.add(Ice(util.Vec2D(500, 500),util.Vec2D(0, 0), 50, 50, "Ice"))
+
+        for i in range(0, 50):
+            xpos = i*50
+            ypos = self.window_height - 50
+            mymoss = Moss(util.Vec2D(xpos, ypos), util.Vec2D(0, 0), 50, 50, "moss")
+            moss.add(mymoss)
 
         blocks.append(enemies)
         blocks.append(moss)
