@@ -102,6 +102,9 @@ class AngryBirds:
         '''
         currentBlocks = Level()
         self.blocks = currentBlocks.setup(0)
+        for i in self.blocks:
+            for k in i:
+                self.space.add(k, k.poly)
 
     def run_game(self):
         self.running = True
@@ -227,7 +230,7 @@ class AngryBirds:
             self.slingshots.draw(self.window)
             self.birds.update(self.window)
             for group in self.blocks:
-                group.draw()
+                group.draw(self.window)
 
         pygame.display.update()
 

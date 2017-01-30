@@ -28,15 +28,15 @@ class Level:
         blocks = []
         for i in self.levels[num]:
             if i[0] == 1:
-                enemies.add(Sheep(util.Vec2D(500, 500),0,50,50,self.notify_collision,"sheep"))
+                enemies.add(Sheep(util.Vec2D(500, 500),util.Vec2D(0, 0),50,50,"sheep"))
             elif i[0] == 2:
-                moss.add(Moss(util.Vec2D(500, 500), 0, 50, 50, self.notify_collision, "moss"))
+                moss.add(Moss(util.Vec2D(500, 500),util.Vec2D(0, 0), 50, 50, "moss"))
             elif i[0] == 3:
-                crates.add(Crate(util.Vec2D(500, 500), 0, 50, 50, self.notify_collision, "crate"))
+                crates.add(Crate(util.Vec2D(500, 500),util.Vec2D(0, 0), 50, 50, "crate"))
             elif i[0] == 4:
-                stones.add(Stone(util.Vec2D(500, 500), 0, 50, 50, self.notify_collision, "stone"))
+                stones.add(Stone(util.Vec2D(500, 500),util.Vec2D(0, 0), 50, 50, "stone"))
             elif i[0] == 5:
-                ice.add(Ice(util.Vec2D(500, 500), 0, 50, 50, self.notify_collision, "Ice"))
+                ice.add(Ice(util.Vec2D(500, 500),util.Vec2D(0, 0), 50, 50, "Ice"))
 
         blocks.append(enemies)
         blocks.append(moss)

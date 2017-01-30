@@ -1,4 +1,4 @@
-# A crate object for angy birds
+# A sheep object for angy birds
 # Author: Matthew  Goff, Nik Lockwood
 # Winter 2017
 
@@ -15,7 +15,6 @@ class Sheep(Block, pygame.sprite.Sprite):
                  velocity,
                  height,
                  width,
-                 listener,
                  identifier):
         pygame.sprite.Sprite.__init__(self)
         Block.__init__(self,
@@ -27,5 +26,4 @@ class Sheep(Block, pygame.sprite.Sprite):
                        Sheep.MOMENT,
                        pygame.image.load(
                            "images/RoundAnimals/sheep.png"),
-                       listener,
                        identifier)

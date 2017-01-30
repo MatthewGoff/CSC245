@@ -15,7 +15,6 @@ class Ice(Block, pygame.sprite.Sprite):
                  velocity,
                  height,
                  width,
-                 listener,
                  identifier):
         pygame.sprite.Sprite.__init__(self)
         Block.__init__(self,
@@ -27,5 +26,4 @@ class Ice(Block, pygame.sprite.Sprite):
                        Ice.MOMENT,
                        pygame.image.load(
                            "images/iceblock.png"),
-                       listener,
                        identifier)

@@ -15,7 +15,6 @@ class Moss(Block, pygame.sprite.Sprite):
                  velocity,
                  height,
                  width,
-                 listener,
                  identifier):
         pygame.sprite.Sprite.__init__(self)
         Block.__init__(self,
@@ -27,5 +26,4 @@ class Moss(Block, pygame.sprite.Sprite):
                        Moss.MOMENT,
                        pygame.image.load(
                            "images/moss square box tileset game obstacle/PNG/moss_tile.png"),
-                       listener,
                        identifier)
