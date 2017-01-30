@@ -7,7 +7,7 @@ import pygame
 from GameEngine import game_objects, util, game
 
 
-class BrickBuster(game.Game):
+class BrickBreaker(game.Game):
     WINDOW_COLOR = pygame.Color("Black")
 
     # Play parameters
@@ -34,8 +34,8 @@ class BrickBuster(game.Game):
         self.paddle = game_objects.HorizontalPaddle(util.Vec2D(int(self.window_width/2),
                                                                self.window_height - 50),
                                                     util.Vec2D(0, 0),
-                                                    BrickBuster.PADDLE_HEIGHT,
-                                                    BrickBuster.PADDLE_WIDTH,
+                                                    BrickBreaker.PADDLE_HEIGHT,
+                                                    BrickBreaker.PADDLE_WIDTH,
                                                     window_bounds,
                                                     pygame.Color("white"),
                                                     "paddle")
@@ -53,11 +53,11 @@ class BrickBuster(game.Game):
                                             identifier)]
 
         self.bricks = []
-        for row in range(0, BrickBuster.NUM_ROWS):
-            brick_width = self.window_width/BrickBuster.NUM_BRICKS
-            brick_height = BrickBuster.ROW_HEIGHT
-            position = util.Vec2D(brick_width/2, brick_height/2 + BrickBuster.TOP_MARGIN + (brick_height * row))
-            for i in range(0, BrickBuster.NUM_BRICKS):
+        for row in range(0, BrickBreaker.NUM_ROWS):
+            brick_width = self.window_width / BrickBreaker.NUM_BRICKS
+            brick_height = BrickBreaker.ROW_HEIGHT
+            position = util.Vec2D(brick_width / 2, brick_height / 2 + BrickBreaker.TOP_MARGIN + (brick_height * row))
+            for i in range(0, BrickBreaker.NUM_BRICKS):
                 self.bricks += [game_objects.Brick(position,
                                                    brick_height,
                                                    brick_width,
@@ -79,9 +79,9 @@ class BrickBuster(game.Game):
 
         if keys[pygame.K_RIGHT]:
             self.paddle.set_velocity(
-                util.Vec2D(BrickBuster.PADDLE_SPEED, 0))
+                util.Vec2D(BrickBreaker.PADDLE_SPEED, 0))
         elif keys[pygame.K_LEFT]:
-            self.paddle.set_velocity(util.Vec2D(BrickBuster.PADDLE_SPEED, 0) * (-1))
+            self.paddle.set_velocity(util.Vec2D(BrickBreaker.PADDLE_SPEED, 0) * (-1))
         else:
             self.paddle.set_velocity(util.Vec2D(0, 0))
 
@@ -92,7 +92,7 @@ class BrickBuster(game.Game):
                 self.bricks.remove(brick)
 
     def update_display(self):
-        self.window.fill(BrickBuster.WINDOW_COLOR)
+        self.window.fill(BrickBreaker.WINDOW_COLOR)
 
         if self.lives <= 0:
             util.draw_text(self.window,
@@ -108,15 +108,15 @@ class BrickBuster(game.Game):
         self.paddle.draw(self.window)
 
         for ball in self.balls:
-            ball.draw(self.window, BrickBuster.DRAW_VELOCITY)
+            ball.draw(self.window, BrickBreaker.DRAW_VELOCITY)
 
         for brick in self.bricks:
             brick.draw(self.window)
 
-        if BrickBuster.DRAW_QUADTREE:
+        if BrickBreaker.DRAW_QUADTREE:
             util.draw_quadtree(self.window, self.quadtree)
 
-        if BrickBuster.LABEL_OBJECTS:
+        if BrickBreaker.LABEL_OBJECTS:
             for object in self.objects:
                 util.draw_text(self.window,
                                object.__str__(),
@@ -132,5 +132,5 @@ class BrickBuster(game.Game):
             self.lives -= 1
 
 # Start game
-my_pong_game = BrickBuster(640 * 2, 480 * 2)
+my_pong_game = BrickBreaker(640 * 2, 480 * 2)
 my_pong_game.run_game()
