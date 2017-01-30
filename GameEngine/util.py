@@ -277,9 +277,17 @@ def draw_quadtree(window, quadtree):
               24)
 
 
-def draw_text(window, text_param, center, size):
+def draw_text(window,
+              text_param,
+              center,
+              size,
+              text_color = (255, 255, 255),
+              background = None):
     basic_font = pygame.font.SysFont(None, size)
-    text = basic_font.render(text_param, True, (255, 255, 255), (0, 0, 0))
+    if background is None:
+        text = basic_font.render(text_param, True, text_color)
+    else:
+        text = basic_font.render(text_param, True, text_color, background)
     text_rect = text.get_rect()
     text_rect.centerx = center[0]
     text_rect.centery = center[1]
