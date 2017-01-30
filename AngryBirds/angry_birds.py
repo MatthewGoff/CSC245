@@ -50,11 +50,13 @@ class AngryBirds:
 
         def collision(arbiter, space, data):
             if (issubclass(arbiter.shapes[0].body.__class__, Bird)
-                and issubclass(arbiter.shapes[1].body.__class__, Block)):
+                and issubclass(arbiter.shapes[1].body.__class__, Block)
+                and not issubclass(arbiter.shapes[1].body.__class__, Moss)):
                 bird = arbiter.shapes[0]
                 block = arbiter.shapes[1]
             elif (issubclass(arbiter.shapes[0].body.__class__, Block)
-                and issubclass(arbiter.shapes[1].body.__class__, Bird)):
+                and issubclass(arbiter.shapes[1].body.__class__, Bird)
+                and not issubclass(arbiter.shapes[0].body.__class__, Moss)):
                 bird = arbiter.shapes[1]
                 block = arbiter.shapes[0]
             else:

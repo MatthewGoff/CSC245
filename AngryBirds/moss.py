@@ -3,6 +3,7 @@
 # Winter 2017
 
 import pygame
+import pymunk
 from block import Block
 
 
@@ -26,4 +27,6 @@ class Moss(Block, pygame.sprite.Sprite):
                        Moss.MOMENT,
                        pygame.image.load(
                            "images/moss square box tileset game obstacle/PNG/moss_tile.png"),
-                       identifier)
+                       identifier,
+                       body_type=pymunk.Body.STATIC)
+
