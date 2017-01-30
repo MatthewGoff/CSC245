@@ -31,18 +31,8 @@ class Bird(pymunk.Body, pygame.sprite.Sprite):
                                 self.poly.radius*2,
                                 self.poly.radius*2)
 
-    def simulate(self):
-        acceleration = self.physics_environment.gravity
-        self.velocity += acceleration
-        self.position += self.velocity
-        self.update_rect()
-
-
     def setVel(self, velocity):
-        self.velocity = velocity
-
-    def makeActive(self):
-        self.active = True
+        self.velocity = velocity.x, velocity.y
 
     def pullSpot(self, stretchPos):
-        self.position = stretchPos
+        self.position = stretchPos.x, stretchPos.y

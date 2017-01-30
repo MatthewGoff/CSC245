@@ -142,12 +142,11 @@ class AngryBirds:
         keys = pygame.key.get_pressed()
 
     def apply_rules(self):
-        bird = stoneBird(self.slingshot.position,
-                         self.launch_velocity,
-                         self.physics_environment,
-                         "new")
-        if self.pulling:
 
+        if self.pulling:
+            bird = BasicBird(self.slingshot.position,
+                             self.launch_velocity,
+                             "new")
             self.birds.add(bird)
             self.shootingBird.append(bird)
             self.pulling = False
@@ -157,8 +156,8 @@ class AngryBirds:
             self.shootingBird[0].pullSpot(self.slingshot.position - self.launch_velocity)
 
         if self.firing and len(self.shootingBird) != 0:
-            self.shootingBird[0].makeActive()
             self.shootingBird[0].setVel(self.launch_velocity)
+            self.space.add(self.shootingBird[0], self.shootingBird[0].poly)
             self.shootingBird = []
             self.firing = False
 
