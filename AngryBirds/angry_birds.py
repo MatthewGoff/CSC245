@@ -5,6 +5,7 @@
 import pygame
 from GameEngine import util, game_objects
 from bird import Bird
+from BasicBird import BasicBird
 from slingshot import Slingshot
 
 
@@ -68,10 +69,11 @@ class AngryBirds:
                       self.left_wall]
 
         self.birds = pygame.sprite.Group()
-        self.bird = Bird(util.Vec2D(50, 50), util.Vec2D(0, 0), 50, 0, "bird")
+        self.bird = BasicBird(util.Vec2D(50, 50), util.Vec2D(0, 0), 50, 0, "bird")
         self.birds.add(self.bird)
 
         self.slingshots = pygame.sprite.Group()
+
         self.slingshot = Slingshot(util.Vec2D(200, 200), 50, "slingshot")
         self.slingshots.add(self.slingshot)
 
@@ -108,8 +110,7 @@ class AngryBirds:
 
     def apply_rules(self):
         if self.firing:
-            print "firing"
-            bird = Bird(self.slingshot.position,
+            bird = BasicBird(self.slingshot.position,
                         util.Vec2D(1, 1),
                         50,
                         0,
