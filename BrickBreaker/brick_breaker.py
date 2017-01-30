@@ -132,5 +132,5 @@ class BrickBreaker(game.Game):
             self.lives -= 1
 
 # Start game
-my_pong_game = BrickBreaker(640 * 2, 480 * 2)
-my_pong_game.run_game()
+brick_breaker = BrickBreaker(640 * 2, 480 * 2)
+brick_breaker.run_game()
