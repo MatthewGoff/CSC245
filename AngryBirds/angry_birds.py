@@ -5,6 +5,8 @@
 import pygame
 import pymunk
 from GameEngine import util, game_objects
+from block import Block
+from bird import Bird
 from BasicBird import BasicBird
 from iceBird import iceBird
 from crateBird import crateBird
@@ -46,6 +48,27 @@ class AngryBirds:
         self.space.gravity = 0, 1
         self.space.damping = 1
 
+        def collision(arbiter, space, data):
+            if (issubclass(arbiter.shapes[0].body.__class__, Bird)
+                and issubclass(arbiter.shapes[1].body.__class__, Block)):
+                bird = arbiter.shapes[0]
+                block = arbiter.shapes[1]
+            elif (issubclass(arbiter.shapes[0].body.__class__, Block)
+                and issubclass(arbiter.shapes[1].body.__class__, Bird)):
+                bird = arbiter.shapes[1]
+                block = arbiter.shapes[0]
+            else:
+                return True
+
+            space.remove(bird, bird.body)
+            space.remove(block, block.body)
+            bird.body.kill()
+            block.body.kill()
+            return False
+
+        h = self.space.add_default_collision_handler()
+        h.begin = collision
+
         self.birds = pygame.sprite.Group()
         self.slingshots = pygame.sprite.Group()
         #self.crates = pygame.sprite.Group()
@@ -72,7 +95,6 @@ class AngryBirds:
                       util.Vec2D(0, 0),
                       100,
                       100,
-                      self.notify_collision,
                       "crate")
         self.space.add(crate, crate.poly)
 
@@ -208,111 +230,6 @@ class AngryBirds:
                 group.draw()
 
         pygame.display.update()
-
-    def notify_collision(self, block, bird):
-        bird.kill()
-        #self.crates.remove(block)
-
-    def resolve_collision(self, object2, object1):
-        '''
-        Cannot collide two walls
-        :param object2:
-        :param object1:
-        :return:
-        '''
-
-        if object1 == object2:
-            return
-
-        if issubclass(object2.__class__, game_objects.Block):
-            for wall in object2.get_walls():
-                self.resolve_collision(wall, object1)
-            return
-
-        if type(object2) is game_objects.Wall:
-            temp = object2
-            object2 = object1
-            object1 = temp
-
-        distance = object2.get_position()-object1.get_position()  # towards object 2
-
-        if type(object1) is game_objects.Wall:
-            unit_norm = object1.get_norm()
-            unit_tang = unit_norm.perp()
-            if (abs(distance.dot(unit_norm)) <= object2.get_radius()
-                and abs(distance.dot(unit_tang)) <= (object1.get_radius() + object2.get_radius())):
-                if distance.dot(unit_tang) > object1.get_radius():
-                    corner = object1.get_position() + unit_tang * object1.get_radius()
-                    normal = object2.get_position()-corner
-                    if normal.mag() <= object2.get_radius():
-                        unit_norm = normal.unit()
-                        unit_tang = unit_norm.perp()
-                    else:
-                        return
-                elif distance.dot(unit_tang) < object1.get_radius() * (-1):
-                    corner = object1.get_position() - unit_tang * object1.get_radius()
-                    normal = object2.get_position() - corner
-                    if normal.mag() <= object2.get_radius():
-                        unit_norm = normal.unit()
-                        unit_tang = unit_norm.perp()
-                    else:
-                        return
-                else:
-                    unit_norm = object1.get_norm()
-                    unit_tang = unit_norm.perp()
-            else:
-                #No collision
-                return
-        else:
-            unit_norm = distance.unit()
-            unit_tang = unit_norm.perp()
-            if distance.mag() > (object1.get_radius() + object2.get_radius()):
-                return
-
-        m1 = object1.get_mass()
-        m2 = object2.get_mass()
-        v1 = object1.get_velocity()
-        v2 = object2.get_velocity()
-
-        v1norm_i = v1.dot(unit_norm)
-        v1tang_i = v1.dot(unit_tang)
-        v2norm_i = v2.dot(unit_norm)
-        v2tang_i = v2.dot(unit_tang)
-
-        if v1norm_i - v2norm_i < 0:
-            return
-
-        if m1 == m2:
-            v1norm_f = v2norm_i
-            v1tang_f = v1tang_i
-            v2norm_f = v1norm_i
-            v2tang_f = v2tang_i
-        elif m1 == float("inf"):
-            v1norm_f = v1norm_i
-            v1tang_f = v1tang_i
-            v2norm_f = v1norm_i-v2norm_i
-            v2tang_f = v2tang_i + v1tang_i
-        elif m2 == float("inf"):
-            v1norm_f = v2norm_i-v1norm_i
-            v1tang_f = v1tang_i + v2tang_i
-            v2norm_f = v2norm_i
-            v2tang_f = v2tang_i
-        else:
-            v1norm_f = (v1norm_i * (m1 - m2) + 2 * m2 * v2norm_i) / (m1 + m2)
-            v1tang_f = v1tang_i
-            v2norm_f = (v2norm_i * (m2 - m1) + 2 * m1 * v1norm_i) / (m1 + m2)
-            v2tang_f = v2tang_i
-
-        v1norm = unit_norm * v1norm_f
-        v1tang = unit_tang * v1tang_f
-        v2norm = unit_norm * v2norm_f
-        v2tang = unit_tang * v2tang_f
-
-        object1.collide(v1norm + v1tang, object2)
-        object2.collide(v2norm + v2tang, object1)
-
-        if not self.mute:
-            self.bounce_sound.play(0, 250)
 
     def label_objects(self):
         for bird in self.birds:
