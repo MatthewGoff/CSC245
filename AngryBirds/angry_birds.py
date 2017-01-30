@@ -14,6 +14,7 @@ from crate import Crate
 from ice import Ice
 from stone import Stone
 from moss import Moss
+from Levels import Level
 
 
 class AngryBirds:
@@ -24,7 +25,7 @@ class AngryBirds:
         print "Seed = " + str(util.get_seed())
         pygame.init()
         pygame.mixer.init()
-        self.bounce_sound = pygame.mixer.Sound("bounce.wav")
+        self.bounce_sound = pygame.mixer.Sound("audio/wood.wav")
         self.mute = True
 
         self.shootingBird = []
@@ -47,7 +48,8 @@ class AngryBirds:
 
         self.birds = pygame.sprite.Group()
         self.slingshots = pygame.sprite.Group()
-        self.crates = pygame.sprite.Group()
+        #self.crates = pygame.sprite.Group()
+        self.blocks = []
 
         self.slingshot = Slingshot(util.Vec2D(300, self.window_height - 300),
                                    50, "slingshot")
@@ -61,7 +63,9 @@ class AngryBirds:
         self.init_objects()
 
     def init_objects(self):
+
         self.birds = pygame.sprite.Group()
+        '''
         self.crates = pygame.sprite.Group()
 
         crate = Crate(util.Vec2D(500, 500),
@@ -73,6 +77,9 @@ class AngryBirds:
         self.space.add(crate, crate.poly)
 
         self.crates.add(crate)
+        '''
+        currentBlocks = Level()
+        self.blocks = currentBlocks.setup(0)
 
     def run_game(self):
         self.running = True
@@ -197,13 +204,14 @@ class AngryBirds:
 
             self.slingshots.draw(self.window)
             self.birds.update(self.window)
-            self.crates.draw(self.window)
+            for group in self.blocks:
+                group.draw()
 
         pygame.display.update()
 
     def notify_collision(self, block, bird):
         bird.kill()
-        self.crates.remove(block)
+        #self.crates.remove(block)
 
     def resolve_collision(self, object2, object1):
         '''
