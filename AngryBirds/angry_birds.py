@@ -10,7 +10,7 @@ from slingshot import Slingshot
 
 class AngryBirds:
     WINDOW_COLOR = pygame.Color("lightblue")
-    GRAVITY = util.Vec2D(0, .005)
+    GRAVITY = util.Vec2D(0, .05)
     DRAG = 1
 
     def __init__(self, window_width, window_height):
