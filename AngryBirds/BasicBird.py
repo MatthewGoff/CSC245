@@ -8,6 +8,13 @@ import GameEngine.util
 
 class BasicBird(Bird):
 
-    def __init__(self, position, velocity, radius, mass, identifier):
+    def __init__(self, position, velocity, radius, mass, physics_environment, identifier):
         self.image_str = "images/Bird attacks sprite sheets/Transparent PNG/Bird B/frame-1.png"
-        Bird.__init__(self, position, velocity, radius, mass, self.image_str, identifier)
+        Bird.__init__(self,
+                      position,
+                      velocity,
+                      radius,
+                      mass,
+                      physics_environment,
+                      self.image_str,
+                      identifier)
