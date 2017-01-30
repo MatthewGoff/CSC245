@@ -21,6 +21,7 @@ class Bird(game_objects.Ball, pygame.sprite.Sprite):
         game_objects.Ball.__init__(self, position, velocity, radius, identifier)
         self.physics_environment = physics_environment
         self.mass = mass
+        self.active = False
 
         #self.image = pygame.transform.smoothscale(
         #    image,
@@ -35,13 +36,14 @@ class Bird(game_objects.Ball, pygame.sprite.Sprite):
                                 self.radius*2)
 
     def simulate(self):
-        acceleration = self.physics_environment.gravity
-        self.velocity += acceleration
-        self.position += self.velocity
-     #   print "a " + acceleration
-     #   print "v " + self.velocity
-     #   print "p " + self.position
-        self.update_rect()
+        if self.active:
+            acceleration = self.physics_environment.gravity
+            self.velocity += acceleration
+            self.position += self.velocity
+            self.update_rect()
 
     def setVel(self, velocity):
         self.velocity = velocity
+
+    def activate(self):
+        self.active = True

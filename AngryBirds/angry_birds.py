@@ -28,9 +28,11 @@ class AngryBirds:
         self.bounce_sound = pygame.mixer.Sound("bounce.wav")
 
         self.mute = True
+        self.shootingBird = []
         self.running = False
         self.instructions = True
         self.firing = False
+        self.pulling = False
         self.mouse_origin = util.Vec2D(0, 0)
         self.launch_velocity = util.Vec2D(0, 0)
 
@@ -128,10 +130,6 @@ class AngryBirds:
         self.takedown()
 
     def handle_events(self):
-        #bird = BasicBird(self.slingshot.position,
-         #                0,
-          #               self.physics_environment,
-           #              "new")
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
@@ -143,14 +141,15 @@ class AngryBirds:
                 elif event.key == pygame.K_r:
                     self.instructions = False
                     self.init_objects()
+
             elif event.type == pygame.MOUSEBUTTONDOWN:
 
                 #print "Button pressed:", event.dict['button'], "@", event.dict['pos']
                 button_pressed = event.dict['button']
                 target = event.dict['pos']
                 if button_pressed == 1: # Left click targets
+                    self.pulling = True
                     self.mouse_origin = util.Vec2D(target[0], target[1])
-                #    self.birds.add(bird)
                 elif button_pressed == 3: # Right click fires
                     pass
 
@@ -165,10 +164,6 @@ class AngryBirds:
                     mouse_end = util.Vec2D(target[0], target[1])
                     self.launch_velocity = self.mouse_origin - mouse_end
                     self.launch_velocity *= AngryBirds.LAUNCH_SPEED
-                    #bird.velocity = self.launch_velocity
-                    #print self.launch_velocity
-                    #self.birdsInPlay.add(bird)
-
 
                 elif button_pressed == 3: # Right click fires
                     pass
@@ -176,21 +171,29 @@ class AngryBirds:
         keys = pygame.key.get_pressed()
 
     def apply_rules(self):
-        if self.firing:
-            bird = stoneBird(self.slingshot.position,
-                        self.launch_velocity,
-                        self.physics_environment,
-                        "new")
+        bird = stoneBird(self.slingshot.position,
+                         self.launch_velocity,
+                         self.physics_environment,
+                         "new")
+        print self.firing
+        if self.pulling:
             self.birds.add(bird)
+            self.shootingBird.append(bird)
+            self.pulling = False
+
+        if self.firing:
+            self.shootingBird[0].activate()
+            self.shootingBird[0].setVel(self.launch_velocity)
+            self.shootingBird = []
             self.firing = False
 
         self.quadtree.insert_many(self.birds)
         self.quadtree.insert_many(self.crates)
 
-#        for bird in self.birds:
-#            neighbors = self.quadtree.get_neighbors(bird)
-#            for neighbor in neighbors:
-#                self.resolve_collision(neighbor, bird)
+        for bird in self.birds:
+            neighbors = self.quadtree.get_neighbors(bird)
+            for neighbor in neighbors:
+                self.resolve_collision(neighbor, bird)
 
     def simulate(self):
         for bird in self.birds:
