@@ -50,11 +50,13 @@ class AngryBirds:
 
         def collision(arbiter, space, data):
             if (issubclass(arbiter.shapes[0].body.__class__, Bird)
-                and issubclass(arbiter.shapes[1].body.__class__, Block)):
+                and issubclass(arbiter.shapes[1].body.__class__, Block)
+                and not issubclass(arbiter.shapes[1].body.__class__, Moss)):
                 bird = arbiter.shapes[0]
                 block = arbiter.shapes[1]
             elif (issubclass(arbiter.shapes[0].body.__class__, Block)
-                and issubclass(arbiter.shapes[1].body.__class__, Bird)):
+                and issubclass(arbiter.shapes[1].body.__class__, Bird)
+                and not issubclass(arbiter.shapes[0].body.__class__, Moss)):
                 bird = arbiter.shapes[1]
                 block = arbiter.shapes[0]
             else:
@@ -77,11 +79,6 @@ class AngryBirds:
         self.slingshot = Slingshot(util.Vec2D(300, self.window_height - 300),
                                    50, "slingshot")
         self.slingshots.add(self.slingshot)
-
-        self.floor = pymunk.Body(mass=100, moment=100, body_type=pymunk.Body.STATIC)
-        self.floorpoly = pymunk.Segment(self.floor, (0, window_height),
-                                        (window_width, window_height), 5)
-        self.space.add(self.floor, self.floorpoly)
 
         self.init_objects()
 

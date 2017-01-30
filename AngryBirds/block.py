@@ -16,9 +16,10 @@ class Block(pymunk.Body, pygame.sprite.Sprite):
                  mass,
                  moment,
                  image,
-                 identifier):
+                 identifier,
+                 body_type=pymunk.Body.DYNAMIC):
         pygame.sprite.Sprite.__init__(self)
-        pymunk.Body.__init__(self, mass, moment)
+        pymunk.Body.__init__(self, mass, moment, body_type)
         self.poly = pymunk.Poly.create_box(self, size=(width, height))
         self.position = position.x, position.y
         self.velocity = velocity.x, velocity.y
