@@ -14,7 +14,7 @@ class AngryBirds:
     GRAVITY = util.Vec2D(0, .005)  # active
     DRAG = 1  # inactive
     LAUNCH_SPEED = 0.1  # active
-
+    
     def __init__(self, window_width, window_height):
         print "Seed = " + str(util.get_seed())
         pygame.init()
