@@ -15,7 +15,6 @@ class Stone(Block, pygame.sprite.Sprite):
                  velocity,
                  height,
                  width,
-                 listener,
                  identifier):
         pygame.sprite.Sprite.__init__(self)
         Block.__init__(self,
@@ -27,5 +26,4 @@ class Stone(Block, pygame.sprite.Sprite):
                        Stone.MOMENT,
                        pygame.image.load(
                            "images/brick_game_asset_game_obstacles/PNG/brick_1.png"),
-                       listener,
                        identifier)

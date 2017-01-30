@@ -15,7 +15,6 @@ class Crate(Block, pygame.sprite.Sprite):
                  velocity,
                  height,
                  width,
-                 listener,
                  identifier):
         pygame.sprite.Sprite.__init__(self)
         Block.__init__(self,
@@ -27,5 +26,4 @@ class Crate(Block, pygame.sprite.Sprite):
                        Crate.MOMENT,
                        pygame.image.load(
                            "images/wooden brick tile game obstacle/PNG/1.png"),
-                       listener,
                        identifier)
