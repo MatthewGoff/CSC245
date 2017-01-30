@@ -5,6 +5,7 @@
 import pygame
 from GameEngine import game, util
 from bird import Bird
+from BasicBird import BasicBird
 from slingshot import Slingshot
 
 
@@ -16,7 +17,7 @@ class AngryBirds(game.Game):
 
         self.balls = []
 
-        self.bird = Bird(util.Vec2D(50, 50), util.Vec2D(0, 0), 50, 0, "bird")
+        self.bird = BasicBird(util.Vec2D(50, 50), util.Vec2D(0, 0), 50, 0, "bird")
         self.slingshot = Slingshot(util.Vec2D(200, 200), 50, "slingshot")
 
         self.game_objects = pygame.sprite.Group()
