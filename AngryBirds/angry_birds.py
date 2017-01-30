@@ -6,6 +6,7 @@ import pygame
 from GameEngine import util, game_objects
 from BasicBird import BasicBird
 from slingshot import Slingshot
+from crate import Crate
 
 
 class AngryBirds:
@@ -81,6 +82,17 @@ class AngryBirds:
 
         self.slingshot = Slingshot(util.Vec2D(200, self.window_height-100), 50, "slingshot")
         self.slingshots.add(self.slingshot)
+
+        self.crates = pygame.sprite.Group()
+        self.crate = Crate(
+                 util.Vec2D(500, 500),
+                 util.Vec2D(0, 0),
+                 100,
+                 100,
+                 0,
+                 self.physics_environment,
+                 "crate")
+        self.crates.add(self.crate)
 
         self.quadtree = util.Quadtree(util.Rectangle(0,
                                                      self.window_height,
@@ -158,6 +170,7 @@ class AngryBirds:
 
         self.slingshots.draw(self.window)
         self.birds.draw(self.window)
+        self.crates.draw(self.window)
 
         pygame.display.update()
 

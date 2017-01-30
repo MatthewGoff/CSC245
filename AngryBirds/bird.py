@@ -8,7 +8,6 @@ from GameEngine import game_objects
 
 class Bird(game_objects.Ball, pygame.sprite.Sprite):
 
-
     def __init__(self,
                  position,
                  velocity,
