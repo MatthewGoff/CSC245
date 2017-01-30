@@ -3,39 +3,39 @@
 # Winter 2017
 
 import pygame
-from GameEngine import game_objects
+import pymunk
 
 
-class Bird(game_objects.Ball, pygame.sprite.Sprite):
+class Bird(pymunk.Body, pygame.sprite.Sprite):
 
     def __init__(self,
                  position,
                  velocity,
                  radius,
                  mass,
-                 physics_environment,
-                 image,
                  identifier):
-        pygame.sprite.Sprite.__init__(self)
-        game_objects.Ball.__init__(self, position, velocity, radius, identifier)
-        self.physics_environment = physics_environment
-        self.mass = mass
 
-        self.image = pygame.transform.smoothscale(
-            image,
-            (self.radius * 2, self.radius * 2))
+        pygame.sprite.Sprite.__init__(self)
+        pymunk.Body.__init__(self, 1, 1666)
+        self.poly = pymunk.Circle(self, radius)
+
+        self.position = position.x, position.y
+        self.velocity = velocity.x, velocity.y
+        self.identifier = identifier
 
         self.update_rect()
 
     def update_rect(self):
-        self.rect = pygame.Rect(self.position.get_x()-self.radius,
-                                self.position.get_y()-self.radius,
-                                self.radius*2,
-                                self.radius*2)
+        self.rect = pygame.Rect(self.position.x - self.poly.radius,
+                                self.position.y - self.poly.radius,
+                                self.poly.radius*2,
+                                self.poly.radius*2)
 
     def simulate(self):
         acceleration = self.physics_environment.gravity
         self.velocity += acceleration
         self.position += self.velocity
-
         self.update_rect()
+
+    def setVel(self, velocity):
+        self.velocity = velocity

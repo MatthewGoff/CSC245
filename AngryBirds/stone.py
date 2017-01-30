@@ -6,7 +6,7 @@ import pygame
 from block import Block
 
 
-class Crate(Block, pygame.sprite.Sprite):
+class Stone(Block, pygame.sprite.Sprite):
     MASS = 1
     MOMENT = 1
 
@@ -23,9 +23,9 @@ class Crate(Block, pygame.sprite.Sprite):
                        velocity,
                        height,
                        width,
-                       Crate.MASS,
-                       Crate.MOMENT,
+                       Stone.MASS,
+                       Stone.MOMENT,
                        pygame.image.load(
-                           "images/wooden brick tile game obstacle/PNG/1.png"),
+                           "images/brick_game_asset_game_obstacles/PNG/brick_1.png"),
                        listener,
                        identifier)
