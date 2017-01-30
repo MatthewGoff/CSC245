@@ -220,4 +220,3 @@ class Game:
                                obj.__str__(),
                                obj.get_position().to_tuple(),
                                24)
-

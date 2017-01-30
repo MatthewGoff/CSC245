@@ -4,13 +4,14 @@
 
 import pygame
 from GameEngine import util, game_objects
-from bird import Bird
 from BasicBird import BasicBird
 from slingshot import Slingshot
 
 
 class AngryBirds:
     WINDOW_COLOR = pygame.Color("lightblue")
+    GRAVITY = util.Vec2D(0, .005)
+    DRAG = 1
 
     def __init__(self, window_width, window_height):
         print "Seed = " + str(util.get_seed())
@@ -26,6 +27,9 @@ class AngryBirds:
         self.window_height = window_height
         self.window = pygame.display.set_mode((self.window_width,
                                                self.window_height))
+
+        self.physics_environment = PhysicsEnvironment(AngryBirds.GRAVITY,
+                                                      AngryBirds.DRAG)
 
         self.left_wall = game_objects.Wall(
             util.Vec2D(0, self.window_height / 2),
@@ -69,12 +73,10 @@ class AngryBirds:
                       self.left_wall]
 
         self.birds = pygame.sprite.Group()
-        self.bird = BasicBird(util.Vec2D(50, 50), util.Vec2D(0, 0), 50, 0, "bird")
-        self.birds.add(self.bird)
 
         self.slingshots = pygame.sprite.Group()
 
-        self.slingshot = Slingshot(util.Vec2D(200, 200), 50, "slingshot")
+        self.slingshot = Slingshot(util.Vec2D(60, self.window_height-60), 50, "slingshot")
         self.slingshots.add(self.slingshot)
 
         self.quadtree = util.Quadtree(util.Rectangle(0,
@@ -111,9 +113,10 @@ class AngryBirds:
     def apply_rules(self):
         if self.firing:
             bird = BasicBird(self.slingshot.position,
-                        util.Vec2D(5, 2),
+                        util.Vec2D(1, -1),
                         50,
                         0,
+                        self.physics_environment,
                         "new")
             self.birds.add(bird)
 
@@ -242,6 +245,13 @@ class AngryBirds:
                            bird.__str__(),
                            bird.get_position().to_tuple(),
                            24)
+
+
+class PhysicsEnvironment:
+
+    def __init__(self, gravity, drag):
+        self.gravity = gravity
+        self.drag = drag
 
 angry_birds = AngryBirds(640*2, 480*2)
 angry_birds.run_game()

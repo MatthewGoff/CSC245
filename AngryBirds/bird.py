@@ -8,9 +8,18 @@ from GameEngine import game_objects
 
 class Bird(game_objects.Ball, pygame.sprite.Sprite):
 
-    def __init__(self, position, velocity, radius, mass, image, identifier):
+
+    def __init__(self,
+                 position,
+                 velocity,
+                 radius,
+                 mass,
+                 physics_environment,
+                 image,
+                 identifier):
         pygame.sprite.Sprite.__init__(self)
         game_objects.Ball.__init__(self, position, velocity, radius, identifier)
+        self.physics_environment = physics_environment
         self.mass = mass
 
         self.image = pygame.transform.smoothscale(
@@ -26,5 +35,8 @@ class Bird(game_objects.Ball, pygame.sprite.Sprite):
                                 self.radius*2)
 
     def simulate(self):
-        game_objects.Ball.simulate(self)
+        acceleration = self.physics_environment.gravity
+        self.velocity += acceleration
+        self.position += self.velocity
+
         self.update_rect()
