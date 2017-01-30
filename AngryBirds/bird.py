@@ -29,8 +29,8 @@ class Bird(game_objects.Ball, pygame.sprite.Sprite):
         self.update_rect()
 
     def update_rect(self):
-        self.rect = pygame.Rect(self.position.get_x()-self.radius,
-                                self.position.get_y()-self.radius,
+        self.rect = pygame.Rect(self.position.get_x(),
+                                self.position.get_y(),
                                 self.radius*2,
                                 self.radius*2)
 

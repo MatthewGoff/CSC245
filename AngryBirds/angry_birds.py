@@ -5,13 +5,16 @@
 import pygame
 from GameEngine import util, game_objects
 from BasicBird import BasicBird
+from iceBird import iceBird
+from crateBird import crateBird
+from stoneBird import stoneBird
 from slingshot import Slingshot
 from crate import Crate
 
 
 class AngryBirds:
     WINDOW_COLOR = pygame.Color("lightblue")
-    GRAVITY = util.Vec2D(0, .05)  # active
+    GRAVITY = util.Vec2D(0, .005)  # active
     DRAG = 1  # inactive
     LAUNCH_SPEED = .05  # active
 
@@ -78,6 +81,7 @@ class AngryBirds:
                       self.left_wall]
 
         self.birds = pygame.sprite.Group()
+        self.birdsInPlay = pygame.sprite.Group()
         self.slingshots = pygame.sprite.Group()
         self.crates = pygame.sprite.Group()
 
@@ -94,6 +98,7 @@ class AngryBirds:
 
     def init_objects(self):
         self.birds = pygame.sprite.Group()
+        self.birdsInPlay = pygame.sprite.Group()
         self.crates = pygame.sprite.Group()
 
         crate = Crate(util.Vec2D(500, 500),
@@ -138,6 +143,11 @@ class AngryBirds:
                 target = event.dict['pos']
                 if button_pressed == 1: # Left click targets
                     self.mouse_origin = util.Vec2D(target[0], target[1])
+                    bird = stoneBird(self.slingshot.position,
+                                     0,
+                                     self.physics_environment,
+                                     "new")
+                    self.birds.add(bird)
                 elif button_pressed == 3: # Right click fires
                     pass
 
@@ -152,6 +162,9 @@ class AngryBirds:
                     mouse_end = util.Vec2D(target[0], target[1])
                     self.launch_velocity = self.mouse_origin - mouse_end
                     self.launch_velocity *= AngryBirds.LAUNCH_SPEED
+                    self.birdsInPlay.add(self.birds[-1])
+
+
                 elif button_pressed == 3: # Right click fires
                     pass
 
@@ -159,13 +172,11 @@ class AngryBirds:
 
     def apply_rules(self):
         if self.firing:
-            bird = BasicBird(self.slingshot.position,
-                        self.launch_velocity,
-                        50,
-                        0,
-                        self.physics_environment,
-                        "new")
-            self.birds.add(bird)
+            #bird = stoneBird(self.slingshot.position,
+            #            self.launch_velocity,
+            #            self.physics_environment,
+            #            "new")
+            #self.birds.add(bird)
             self.firing = False
 
         self.quadtree.insert_many(self.birds)
@@ -177,7 +188,7 @@ class AngryBirds:
                 self.resolve_collision(neighbor, bird)
 
     def simulate(self):
-        for bird in self.birds:
+        for bird in self.birdsInPlay:
             bird.simulate()
 
     def takedown(self):
@@ -218,7 +229,7 @@ class AngryBirds:
         pygame.display.update()
 
     def notify_collision(self, block, bird):
-        self.birds.remove(bird)
+        bird.kill()
         self.crates.remove(block)
 
     def resolve_collision(self, object2, object1):
