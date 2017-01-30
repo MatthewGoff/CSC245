@@ -37,5 +37,12 @@ class Bird(pymunk.Body, pygame.sprite.Sprite):
         self.position += self.velocity
         self.update_rect()
 
+
     def setVel(self, velocity):
         self.velocity = velocity
+
+    def makeActive(self):
+        self.active = True
+
+    def pullSpot(self, stretchPos):
+        self.position = stretchPos
