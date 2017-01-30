@@ -18,14 +18,16 @@ class BasicBird(Bird):
                                              ('images/Bird attacks sprite sheets/Transparent PNG/Bird B/frame-2.png', 0.1),
                                              ('images/Bird attacks sprite sheets/Transparent PNG/Bird B/frame-3.png', 0.1),
                                              ('images/Bird attacks sprite sheets/Transparent PNG/Bird B/frame-4.png', 0.1),])
+        self.radius = 50
+        self.mass = 1
         self.animate.smoothscale((110,100))
         self.animate.play()
 
         Bird.__init__(self,
                       position,
                       velocity,
-                      50,
-                      0,
+                      self.radius,
+                      self.mass,
                       identifier)
 
     def update(self, window):

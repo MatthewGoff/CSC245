@@ -176,7 +176,7 @@ class AngryBirds:
     def apply_rules(self):
 
         if self.pulling:
-            bird = BasicBird(self.slingshot.position,
+            bird = stoneBird(self.slingshot.position,
                              self.launch_velocity,
                              "new")
             self.birds.add(bird)
