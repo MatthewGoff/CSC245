@@ -3,6 +3,7 @@
 # Winter 2017
 
 import pygame
+import pymunk
 from GameEngine import util, game_objects
 from BasicBird import BasicBird
 from iceBird import iceBird
@@ -17,8 +18,6 @@ from moss import Moss
 
 class AngryBirds:
     WINDOW_COLOR = pygame.Color("lightblue")
-    GRAVITY = util.Vec2D(0, .05)  # active
-    DRAG = 1  # inactive
     LAUNCH_SPEED = .05  # active
 
     def __init__(self, window_width, window_height):
@@ -26,9 +25,10 @@ class AngryBirds:
         pygame.init()
         pygame.mixer.init()
         self.bounce_sound = pygame.mixer.Sound("bounce.wav")
-
         self.mute = True
+
         self.shootingBird = []
+
         self.running = False
         self.instructions = True
         self.firing = False
@@ -41,52 +41,11 @@ class AngryBirds:
         self.window = pygame.display.set_mode((self.window_width,
                                                self.window_height))
 
-        self.physics_environment = PhysicsEnvironment(AngryBirds.GRAVITY,
-                                                      AngryBirds.DRAG)
-
-        self.left_wall = game_objects.Wall(
-            util.Vec2D(0, self.window_height / 2),
-            util.Vec2D(0, 0),
-            util.Vec2D(1, 0),
-            self.window_height,
-            float("inf"),
-            pygame.Color("white"),
-            "left wall",
-            self.notify_collision)
-        self.top_wall = game_objects.Wall(util.Vec2D(self.window_width / 2, 0),
-                                          util.Vec2D(0, 0),
-                                          util.Vec2D(0, 1),
-                                          self.window_width,
-                                          float("inf"),
-                                          pygame.Color("white"),
-                                          "top wall",
-                                          self.notify_collision)
-        self.bottom_wall = game_objects.Wall(util.Vec2D(self.window_width / 2,
-                                                        self.window_height),
-                                             util.Vec2D(0, 0),
-                                             util.Vec2D(0, -1),
-                                             self.window_width,
-                                             float("inf"),
-                                             pygame.Color("white"),
-                                             "bottom wall",
-                                             self.notify_collision)
-        self.right_wall = game_objects.Wall(util.Vec2D(self.window_width,
-                                                       self.window_height / 2),
-                                            util.Vec2D(0, 0),
-                                            util.Vec2D(-1, 0),
-                                            self.window_height,
-                                            float("inf"),
-                                            pygame.Color("white"),
-                                            "right wall",
-                                            self.notify_collision)
-
-        self.walls = [self.top_wall,
-                      self.bottom_wall,
-                      self.right_wall,
-                      self.left_wall]
+        self.space = pymunk.Space()
+        self.space.gravity = 0, 1
+        self.space.damping = 1
 
         self.birds = pygame.sprite.Group()
-        self.birdsInPlay = pygame.sprite.Group()
         self.slingshots = pygame.sprite.Group()
         self.crates = pygame.sprite.Group()
 
@@ -94,26 +53,25 @@ class AngryBirds:
                                    50, "slingshot")
         self.slingshots.add(self.slingshot)
 
-        self.init_objects()
+        self.floor = pymunk.Body(mass=100, moment=100, body_type=pymunk.Body.STATIC)
+        self.floorpoly = pymunk.Segment(self.floor, (0, window_height),
+                                        (window_width, window_height), 5)
+        self.space.add(self.floor, self.floorpoly)
 
-        self.quadtree = util.Quadtree(util.Rectangle(0,
-                                                     self.window_height,
-                                                     0,
-                                                     self.window_width))
+        self.init_objects()
 
     def init_objects(self):
         self.birds = pygame.sprite.Group()
-        self.birdsInPlay = pygame.sprite.Group()
         self.crates = pygame.sprite.Group()
 
-        crate = Moss(util.Vec2D(500, 500),
-                           util.Vec2D(0, 0),
-                           100,
-                           100,
-                           0,
-                           self.physics_environment,
-                           self.notify_collision,
-                           "crate")
+        crate = Crate(util.Vec2D(500, 500),
+                      util.Vec2D(0, 0),
+                      100,
+                      100,
+                      self.notify_collision,
+                      "crate")
+        self.space.add(crate, crate.poly)
+
         self.crates.add(crate)
 
     def run_game(self):
@@ -127,7 +85,6 @@ class AngryBirds:
         self.apply_rules()
         self.simulate()
         self.update_display()
-        self.takedown()
 
     def handle_events(self):
         for event in pygame.event.get():
@@ -165,6 +122,13 @@ class AngryBirds:
 
                 if button_pressed == 1: # Left click targets
                     self.firing = True
+                    mouse_end = util.Vec2D(target[0], target[1])
+                    self.launch_velocity = self.mouse_origin - mouse_end
+                    self.launch_velocity *= AngryBirds.LAUNCH_SPEED
+                    #bird.velocity = self.launch_velocity
+                    #print self.launch_velocity
+
+
 
                 elif button_pressed == 3: # Right click fires
                     pass
@@ -183,6 +147,7 @@ class AngryBirds:
                          self.physics_environment,
                          "new")
         if self.pulling:
+
             self.birds.add(bird)
             self.shootingBird.append(bird)
             self.pulling = False
@@ -197,20 +162,11 @@ class AngryBirds:
             self.shootingBird = []
             self.firing = False
 
-        self.quadtree.insert_many(self.birds)
-        self.quadtree.insert_many(self.crates)
-
-        for bird in self.birds:
-            neighbors = self.quadtree.get_neighbors(bird)
-            for neighbor in neighbors:
-                self.resolve_collision(neighbor, bird)
-
     def simulate(self):
-        for bird in self.birds:
-            bird.simulate()
-
-    def takedown(self):
-        self.quadtree.clear()
+        self.space.step(0.02)
+        for body in self.space.bodies:
+            if issubclass(body.__class__, pygame.sprite.Sprite):
+                body.update_rect()
 
     def update_display(self):
 

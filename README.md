@@ -10,6 +10,7 @@ Sources:
 Transparance: http://stackoverflow.com/questions/17581545/drawn-surface-transparency-in-pygame
 Quadtree: https://gamedevelopment.tutsplus.com/tutorials/quick-tip-use-quadtrees-to-detect-likely-collisions-in-2d-space--gamedev-374
 Collisions: http://vobarian.com/collisions/2dcollisions2.pdf
+Sprites: http://stackoverflow.com/questions/13057901/how-do-i-bind-a-pyglet-sprite-with-a-pymunk-shape-so-they-rotate-together
 
 Images:
 
@@ -17,9 +18,9 @@ Images:
 Sounds:
 
 
-TODO:
+# TODO:
 
-Physics:
+### Physics:
 - Change the quadtree so garbage collection is more efficient
 - Eliminate redundant collision checks (top down quadtree iteration)
 - Introduce dynamic time steps
@@ -29,5 +30,5 @@ Physics:
 - Conduct thurough test of collisions
 - Introduce reduced tangential friction
 
-Aesthetics:
+### Aesthetics:
 - Remove setters and getters (More pythonic ?)

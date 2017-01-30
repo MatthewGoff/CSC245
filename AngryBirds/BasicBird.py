@@ -9,9 +9,10 @@ from bird import Bird
 import GameEngine.util
 import pyganim
 
+
 class BasicBird(Bird):
 
-    def __init__(self, position, velocity, physics_environment, identifier):
+    def __init__(self, position, velocity, identifier):
         #self.image = pygame.image.load("images/Bird attacks sprite sheets/Transparent PNG/Bird B/frame-1.png")
         self.animate = pyganim.PygAnimation([('images/Bird attacks sprite sheets/Transparent PNG/Bird B/frame-1.png', 0.1),
                                              ('images/Bird attacks sprite sheets/Transparent PNG/Bird B/frame-2.png', 0.1),
@@ -25,8 +26,7 @@ class BasicBird(Bird):
                       velocity,
                       50,
                       0,
-                      physics_environment,
                       identifier)
 
     def update(self, window):
-        self.animate.blit(window, (self.position.get_x(), self.position.get_y()))
+        self.animate.blit(window, (self.position.x, self.position.y))
