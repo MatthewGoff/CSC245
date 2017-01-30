@@ -20,9 +20,10 @@ class AngryBirds:
         pygame.init()
         pygame.mixer.init()
         self.bounce_sound = pygame.mixer.Sound("bounce.wav")
-        self.mute = True
 
+        self.mute = True
         self.running = False
+        self.instructions = True
         self.firing = False
         self.mouse_origin = util.Vec2D(0, 0)
         self.launch_velocity = util.Vec2D(0, 0)
@@ -77,27 +78,33 @@ class AngryBirds:
                       self.left_wall]
 
         self.birds = pygame.sprite.Group()
-
         self.slingshots = pygame.sprite.Group()
+        self.crates = pygame.sprite.Group()
 
-        self.slingshot = Slingshot(util.Vec2D(200, self.window_height-100), 50, "slingshot")
+        self.slingshot = Slingshot(util.Vec2D(200, self.window_height - 100),
+                                   50, "slingshot")
         self.slingshots.add(self.slingshot)
 
-        self.crates = pygame.sprite.Group()
-        self.crate = Crate(
-                 util.Vec2D(500, 500),
-                 util.Vec2D(0, 0),
-                 100,
-                 100,
-                 0,
-                 self.physics_environment,
-                 "crate")
-        self.crates.add(self.crate)
+        self.init_objects()
 
         self.quadtree = util.Quadtree(util.Rectangle(0,
                                                      self.window_height,
                                                      0,
                                                      self.window_width))
+
+    def init_objects(self):
+        self.birds = pygame.sprite.Group()
+        self.crates = pygame.sprite.Group()
+
+        crate = Crate(util.Vec2D(500, 500),
+                           util.Vec2D(0, 0),
+                           100,
+                           100,
+                           0,
+                           self.physics_environment,
+                           self.notify_collision,
+                           "crate")
+        self.crates.add(crate)
 
     def run_game(self):
         self.running = True
@@ -121,6 +128,9 @@ class AngryBirds:
                     self.mute = not self.mute
                 elif event.key == pygame.K_SPACE:
                     self.firing = True
+                elif event.key == pygame.K_r:
+                    self.instructions = False
+                    self.init_objects()
             elif event.type == pygame.MOUSEBUTTONDOWN:
 
                 #print "Button pressed:", event.dict['button'], "@", event.dict['pos']
@@ -158,6 +168,14 @@ class AngryBirds:
             self.birds.add(bird)
             self.firing = False
 
+        self.quadtree.insert_many(self.birds)
+        self.quadtree.insert_many(self.crates)
+
+        for bird in self.birds:
+            neighbors = self.quadtree.get_neighbors(bird)
+            for neighbor in neighbors:
+                self.resolve_collision(neighbor, bird)
+
     def simulate(self):
         for bird in self.birds:
             bird.simulate()
@@ -166,16 +184,42 @@ class AngryBirds:
         self.quadtree.clear()
 
     def update_display(self):
-        self.window.fill(AngryBirds.WINDOW_COLOR)
 
-        self.slingshots.draw(self.window)
-        self.birds.draw(self.window)
-        self.crates.draw(self.window)
+        if self.instructions:
+            self.window.fill(pygame.Color("green"))
+            text_color = pygame.Color("black")
+            util.draw_text(self.window,
+                           "Angry Birds",
+                           (self.window_width/2, 100),
+                           100,
+                           text_color)
+            util.draw_text(self.window,
+                           "By: Matt & Nik",
+                           (self.window_width/2, 200),
+                           50,
+                           text_color)
+            util.draw_text(self.window,
+                           "Drag to shoot",
+                           (self.window_width/2, 300),
+                           50,
+                           text_color)
+            util.draw_text(self.window,
+                           "Press 'R' to start/restart",
+                           (self.window_width/2, 400),
+                           50,
+                           text_color)
+        else:
+            self.window.fill(AngryBirds.WINDOW_COLOR)
+
+            self.slingshots.draw(self.window)
+            self.birds.draw(self.window)
+            self.crates.draw(self.window)
 
         pygame.display.update()
 
-    def notify_collision(self, wall, other):
-        pass
+    def notify_collision(self, block, bird):
+        self.birds.remove(bird)
+        self.crates.remove(block)
 
     def resolve_collision(self, object2, object1):
         '''

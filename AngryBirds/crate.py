@@ -15,6 +15,7 @@ class Crate(game_objects.Block, pygame.sprite.Sprite):
                  width,
                  mass,
                  physics_environment,
+                 listener,
                  identifier):
         pygame.sprite.Sprite.__init__(self)
         game_objects.Block.__init__(self,
@@ -26,6 +27,7 @@ class Crate(game_objects.Block, pygame.sprite.Sprite):
                                     identifier)
         self.physics_environment = physics_environment
         self.mass = mass
+        self.listener = listener
 
         for wall in self.walls:
             wall.mass = self.mass
@@ -43,4 +45,6 @@ class Crate(game_objects.Block, pygame.sprite.Sprite):
                                 self.width,
                                 self.height)
 
-
+    def notify_collision(self, wall, other):
+        game_objects.Block.notify_collision(self, wall, other)
+        self.listener(self, other)
