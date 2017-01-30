@@ -84,14 +84,14 @@ class AngryBirds:
         self.slingshots.add(self.slingshot)
 
         self.crates = pygame.sprite.Group()
-        self.crate = Crate(
-                 util.Vec2D(500, 500),
-                 util.Vec2D(0, 0),
-                 100,
-                 100,
-                 0,
-                 self.physics_environment,
-                 "crate")
+        self.crate = Crate(util.Vec2D(500, 500),
+                           util.Vec2D(0, 0),
+                           100,
+                           100,
+                           0,
+                           self.physics_environment,
+                           self.notify_collision,
+                           "crate")
         self.crates.add(self.crate)
 
         self.quadtree = util.Quadtree(util.Rectangle(0,
@@ -158,6 +158,14 @@ class AngryBirds:
             self.birds.add(bird)
             self.firing = False
 
+        self.quadtree.insert_many(self.birds)
+        self.quadtree.insert_many(self.crates)
+
+        for bird in self.birds:
+            neighbors = self.quadtree.get_neighbors(bird)
+            for neighbor in neighbors:
+                self.resolve_collision(neighbor, bird)
+
     def simulate(self):
         for bird in self.birds:
             bird.simulate()
@@ -174,8 +182,9 @@ class AngryBirds:
 
         pygame.display.update()
 
-    def notify_collision(self, wall, other):
-        pass
+    def notify_collision(self, block, bird):
+        self.birds.remove(bird)
+        self.crates.remove(block)
 
     def resolve_collision(self, object2, object1):
         '''
