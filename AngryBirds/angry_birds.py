@@ -10,10 +10,10 @@ from slingshot import Slingshot
 
 class AngryBirds:
     WINDOW_COLOR = pygame.Color("lightblue")
-    GRAVITY = util.Vec2D(0, .005)  # active
+    GRAVITY = util.Vec2D(0, .05)  # active
     DRAG = 1  # inactive
-    LAUNCH_SPEED = 0.1  # active
-    
+    LAUNCH_SPEED = .05  # active
+
     def __init__(self, window_width, window_height):
         print "Seed = " + str(util.get_seed())
         pygame.init()
