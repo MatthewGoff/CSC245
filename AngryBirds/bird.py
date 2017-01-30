@@ -45,5 +45,8 @@ class Bird(game_objects.Ball, pygame.sprite.Sprite):
     def setVel(self, velocity):
         self.velocity = velocity
 
-    def activate(self):
+    def makeActive(self):
         self.active = True
+
+    def pullSpot(self, stretchPos):
+        self.position = stretchPos

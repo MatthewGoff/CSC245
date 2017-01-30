@@ -17,7 +17,7 @@ from moss import Moss
 
 class AngryBirds:
     WINDOW_COLOR = pygame.Color("lightblue")
-    GRAVITY = util.Vec2D(0, .005)  # active
+    GRAVITY = util.Vec2D(0, .05)  # active
     DRAG = 1  # inactive
     LAUNCH_SPEED = .05  # active
 
@@ -90,7 +90,7 @@ class AngryBirds:
         self.slingshots = pygame.sprite.Group()
         self.crates = pygame.sprite.Group()
 
-        self.slingshot = Slingshot(util.Vec2D(200, self.window_height - 100),
+        self.slingshot = Slingshot(util.Vec2D(300, self.window_height - 300),
                                    50, "slingshot")
         self.slingshots.add(self.slingshot)
 
@@ -106,7 +106,7 @@ class AngryBirds:
         self.birdsInPlay = pygame.sprite.Group()
         self.crates = pygame.sprite.Group()
 
-        crate = Crate(util.Vec2D(500, 500),
+        crate = Moss(util.Vec2D(500, 500),
                            util.Vec2D(0, 0),
                            100,
                            100,
@@ -150,6 +150,10 @@ class AngryBirds:
                 if button_pressed == 1: # Left click targets
                     self.pulling = True
                     self.mouse_origin = util.Vec2D(target[0], target[1])
+                    mouse_end = util.Vec2D(target[0], target[1])
+                    self.launch_velocity = self.mouse_origin - mouse_end
+                    self.launch_velocity *= AngryBirds.LAUNCH_SPEED
+
                 elif button_pressed == 3: # Right click fires
                     pass
 
@@ -161,12 +165,15 @@ class AngryBirds:
 
                 if button_pressed == 1: # Left click targets
                     self.firing = True
-                    mouse_end = util.Vec2D(target[0], target[1])
-                    self.launch_velocity = self.mouse_origin - mouse_end
-                    self.launch_velocity *= AngryBirds.LAUNCH_SPEED
 
                 elif button_pressed == 3: # Right click fires
                     pass
+
+            elif event.type == pygame.MOUSEMOTION:
+                target = event.dict['pos']
+                mouse_end = util.Vec2D(target[0], target[1])
+                self.launch_velocity = self.mouse_origin - mouse_end
+                self.launch_velocity *= AngryBirds.LAUNCH_SPEED
 
         keys = pygame.key.get_pressed()
 
@@ -175,14 +182,17 @@ class AngryBirds:
                          self.launch_velocity,
                          self.physics_environment,
                          "new")
-        print self.firing
         if self.pulling:
             self.birds.add(bird)
             self.shootingBird.append(bird)
             self.pulling = False
 
-        if self.firing:
-            self.shootingBird[0].activate()
+        if len(self.shootingBird) != 0:
+            print self.launch_velocity
+            self.shootingBird[0].pullSpot(self.slingshot.position - self.launch_velocity)
+
+        if self.firing and len(self.shootingBird) != 0:
+            self.shootingBird[0].makeActive()
             self.shootingBird[0].setVel(self.launch_velocity)
             self.shootingBird = []
             self.firing = False
@@ -355,5 +365,5 @@ class PhysicsEnvironment:
         self.gravity = gravity
         self.drag = drag
 
-angry_birds = AngryBirds(640*2, 480*2)
+angry_birds = AngryBirds(1920, 1080)
 angry_birds.run_game()
