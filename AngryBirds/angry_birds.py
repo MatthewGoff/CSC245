@@ -10,9 +10,10 @@ from slingshot import Slingshot
 
 class AngryBirds:
     WINDOW_COLOR = pygame.Color("lightblue")
-    GRAVITY = util.Vec2D(0, .05)
-    DRAG = 1
-
+    GRAVITY = util.Vec2D(0, .005)  # active
+    DRAG = 1  # inactive
+    LAUNCH_SPEED = 0.1  # active
+    
     def __init__(self, window_width, window_height):
         print "Seed = " + str(util.get_seed())
         pygame.init()
@@ -22,6 +23,8 @@ class AngryBirds:
 
         self.running = False
         self.firing = False
+        self.mouse_origin = util.Vec2D(0, 0)
+        self.launch_velocity = util.Vec2D(0, 0)
 
         self.window_width = window_width
         self.window_height = window_height
@@ -76,7 +79,7 @@ class AngryBirds:
 
         self.slingshots = pygame.sprite.Group()
 
-        self.slingshot = Slingshot(util.Vec2D(60, self.window_height-60), 50, "slingshot")
+        self.slingshot = Slingshot(util.Vec2D(200, self.window_height-100), 50, "slingshot")
         self.slingshots.add(self.slingshot)
 
         self.quadtree = util.Quadtree(util.Rectangle(0,
@@ -101,24 +104,47 @@ class AngryBirds:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_m:
-                self.mute = not self.mute
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-                self.firing = True
-            else:
-                self.firing = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_m:
+                    self.mute = not self.mute
+                elif event.key == pygame.K_SPACE:
+                    self.firing = True
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+
+                #print "Button pressed:", event.dict['button'], "@", event.dict['pos']
+                button_pressed = event.dict['button']
+                target = event.dict['pos']
+                if button_pressed == 1: # Left click targets
+                    self.mouse_origin = util.Vec2D(target[0], target[1])
+                elif button_pressed == 3: # Right click fires
+                    pass
+
+            elif event.type == pygame.MOUSEBUTTONUP:
+
+                #print "Button released:", event.dict['button'], "@", event.dict['pos']
+                button_pressed = event.dict['button']
+                target = event.dict['pos']
+
+                if button_pressed == 1: # Left click targets
+                    self.firing = True
+                    mouse_end = util.Vec2D(target[0], target[1])
+                    self.launch_velocity = self.mouse_origin - mouse_end
+                    self.launch_velocity *= AngryBirds.LAUNCH_SPEED
+                elif button_pressed == 3: # Right click fires
+                    pass
 
         keys = pygame.key.get_pressed()
 
     def apply_rules(self):
         if self.firing:
             bird = BasicBird(self.slingshot.position,
-                        util.Vec2D(1, -1),
+                        self.launch_velocity,
                         50,
                         0,
                         self.physics_environment,
                         "new")
             self.birds.add(bird)
+            self.firing = False
 
     def simulate(self):
         for bird in self.birds:
