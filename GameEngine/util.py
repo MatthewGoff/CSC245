@@ -1,3 +1,7 @@
+# Some utility methods for games using pygame.
+# Author: Matthew Goff
+# Winter 2017
+
 import random
 import sys
 import pygame

@@ -1,3 +1,7 @@
+# An abstract class simple pygame games needing some physics.
+# Author: Matthew Goff
+# Winter 2017
+
 import pygame
 
 import game_objects
@@ -118,19 +122,19 @@ class Game:
         if object1 == object2:
             return
 
-        if (type(object2) is game_objects.Wall
-            or type(object2) is game_objects.Block):
+        if issubclass(object2.__class__, game_objects.Block):
+            for wall in object2.get_walls():
+                self.resolve_collision(wall, object1)
+            return
+
+        if type(object2) is game_objects.Wall:
             temp = object2
             object2 = object1
             object1 = temp
 
         distance = object2.get_position()-object1.get_position()  # towards object 2
 
-        if issubclass(object2.__class__, game_objects.Block):
-            for wall in object2.get_walls():
-                self.resolve_collision(wall, object1)
-            return
-        elif type(object1) is game_objects.Wall:
+        if type(object1) is game_objects.Wall:
             unit_norm = object1.get_norm()
             unit_tang = unit_norm.perp()
             if (abs(distance.dot(unit_norm)) <= object2.get_radius()

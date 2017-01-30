@@ -1,3 +1,7 @@
+# Simple physics objects needed for games in pygame
+# Author: Matthew Goff
+# Winter 2017
+
 from math import pi
 
 import pygame
@@ -356,3 +360,45 @@ class Wall(Collidable):
 
     def get_radius(self):
         return self.radius
+
+
+class Gorilla(Ball, pygame.sprite.Sprite):
+
+    def __init__(self, x, y):
+        pygame.sprite.Sprite.__init__(self)
+        Ball.__init__(self)
+
+        self.image = pygame.image.load("images/donkey_kong.gif")
+        self.image = self.image.convert_alpha()
+        self.image = pygame.transoform.smoothscale(self.image,
+                                                   (self.radius*2,
+                                                    self.radius*2))
+
+        self.update_rect()
+
+    def update_rect(self):
+        self.rect = pygame.Rect(self.pos.x-self.radius,
+                                self.pos.y-self.radius,
+                                self.radius*2,
+                                self.radius*2)
+
+
+class Building(pygame.sprite.Sprite):
+
+    def __init__(self, x, y, width, height, windows, floors):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface([width, height])
+        self.image.fill(pygame.color.Color("DarkGrey"))
+
+        # Self.bumpers = []
+
+        #self.width =
+        #self.height =
+
+        for i in range(floors):
+            for j in range(windows):
+                pygame.draw.rect(self.image, pygame.color.Color("LightGrey"),
+                                 pygame.rect())
+
+        self.rect = self.image.get_rect()
+        self.rect.move_ip(x, y)

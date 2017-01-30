@@ -1,3 +1,7 @@
+# The game of Pong.
+# Author: Matthew Goff
+# Winter 2017
+
 import pygame
 
 from GameEngine import game_objects, util, game
