@@ -8,13 +8,13 @@ from GameEngine import game_objects
 
 class Bird(game_objects.Ball, pygame.sprite.Sprite):
 
-    def __init__(self, position, velocity, radius, mass, image_str, identifier):
+    def __init__(self, position, velocity, radius, mass, image, identifier):
         pygame.sprite.Sprite.__init__(self)
         game_objects.Ball.__init__(self, position, velocity, radius, identifier)
         self.mass = mass
 
         self.image = pygame.transform.smoothscale(
-            pygame.image.load(image_str).convert_alpha(),
+            image.convert_alpha(),
             (self.radius * 2, self.radius * 2))
 
         self.update_rect()

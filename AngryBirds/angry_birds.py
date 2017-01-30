@@ -111,7 +111,7 @@ class AngryBirds:
     def apply_rules(self):
         if self.firing:
             bird = BasicBird(self.slingshot.position,
-                        util.Vec2D(1, 1),
+                        util.Vec2D(5, 2),
                         50,
                         0,
                         "new")
