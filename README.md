@@ -17,9 +17,9 @@ Images:
 Sounds:
 
 
-TODO:
+# TODO:
 
-Physics:
+### Physics:
 - Change the quadtree so garbage collection is more efficient
 - Eliminate redundant collision checks (top down quadtree iteration)
 - Introduce dynamic time steps
@@ -29,5 +29,5 @@ Physics:
 - Conduct thurough test of collisions
 - Introduce reduced tangential friction
 
-Aesthetics:
+### Aesthetics:
 - Remove setters and getters (More pythonic ?)
