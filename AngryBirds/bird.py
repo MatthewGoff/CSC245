@@ -21,9 +21,9 @@ class Bird(game_objects.Ball, pygame.sprite.Sprite):
         self.physics_environment = physics_environment
         self.mass = mass
 
-        self.image = pygame.transform.smoothscale(
-            image,
-            (self.radius * 2, self.radius * 2))
+        #self.image = pygame.transform.smoothscale(
+        #    image,
+        #    (self.radius * 2, self.radius * 2))
 
         self.update_rect()
 

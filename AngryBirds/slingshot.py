@@ -13,9 +13,9 @@ class Slingshot(pygame.sprite.Sprite):
         self.radius = radius
         self.identifier = identifier
 
-        self.image = pygame.transform.smoothscale(
-            pygame.image.load("images/slingshot/Slingshot.png").convert_alpha(),
-            (self.radius * 2, self.radius * 2))
+        #self.image = pygame.transform.smoothscale(
+        #    pygame.image.load("images/slingshot/Slingshot.png").convert_alpha(),
+        #    (self.radius * 2, self.radius * 2))
 
         self.update_rect()
 

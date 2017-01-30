@@ -30,7 +30,7 @@ class Crate(game_objects.Block, pygame.sprite.Sprite):
         for wall in self.walls:
             wall.mass = self.mass
 
-        image = pygame.image.load("images/Grumpy flappy bird/PNG/frame-1.png")
+        image = pygame.image.load("images/wooden brick tile game obstacle/PNG/1.png")
         self.image = pygame.transform.smoothscale(
             image.convert_alpha(),
             (self.width, self.height))
