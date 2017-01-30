@@ -60,12 +60,13 @@ class Game:
                                             "right wall",
                                             self.notify_collision)
 
+        self.balls = []
         self.walls = [self.top_wall,
                       self.bottom_wall,
                       self.right_wall,
                       self.left_wall]
 
-        self.objects = [self.walls]
+        self.collidable_objects = [self.walls, self.balls]
 
         self.quadtree = util.Quadtree(util.Rectangle(0,
                                                      self.window_height,
@@ -89,7 +90,7 @@ class Game:
         pass
 
     def apply_rules(self):
-        for obj_class in self.objects:
+        for obj_class in self.collidable_objects:
             self.quadtree.insert_many(obj_class)
 
         for ball in self.balls:
@@ -98,7 +99,7 @@ class Game:
                 self.resolve_collision(neighbor, ball)
 
     def simulate(self):
-        for obj_class in self.objects:
+        for obj_class in self.collidable_objects:
             for obj in obj_class:
                 obj.simulate()
 
@@ -213,7 +214,7 @@ class Game:
             self.bounce_sound.play(0, 250)
 
     def label_objects(self):
-        for obj_class in self.objects:
+        for obj_class in self.collidable_objects:
             for obj in obj_class:
                 util.draw_text(self.window,
                                obj.__str__(),

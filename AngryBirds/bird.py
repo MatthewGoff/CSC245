@@ -24,3 +24,7 @@ class Bird(game_objects.Ball, pygame.sprite.Sprite):
                                 self.position.get_y()-self.radius,
                                 self.radius*2,
                                 self.radius*2)
+
+    def simulate(self):
+        game_objects.Ball.simulate(self)
+        self.update_rect()

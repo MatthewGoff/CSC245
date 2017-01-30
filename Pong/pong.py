@@ -58,8 +58,7 @@ class PongGame(game.Game):
 
             self.balls += [game_objects.PongBall(position, velocity, color_scheme, radius, identifier)]
 
-        self.objects += [self.balls]
-        self.objects += [[self.paddle1, self.paddle2]]
+        self.collidable_objects += [[self.paddle1, self.paddle2]]
 
         self.score1 = 0
         self.score2 = 0

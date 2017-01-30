@@ -64,7 +64,7 @@ class BrickBreaker(game.Game):
                                                    i)]
                 position += util.Vec2D(brick_width, 0)
 
-        self.objects += [[self.paddle]] + [self.balls] + [self.bricks]
+        self.collidable_objects += [[self.paddle]] + [self.bricks]
 
         self.lives = 3
 
@@ -117,7 +117,7 @@ class BrickBreaker(game.Game):
             util.draw_quadtree(self.window, self.quadtree)
 
         if BrickBreaker.LABEL_OBJECTS:
-            for object in self.objects:
+            for object in self.collidable_objects:
                 util.draw_text(self.window,
                                object.__str__(),
                                object.get_position().to_tuple(),
