@@ -78,11 +78,6 @@ class AngryBirds:
                                    50, "slingshot")
         self.slingshots.add(self.slingshot)
 
-        self.floor = pymunk.Body(mass=100, moment=100, body_type=pymunk.Body.STATIC)
-        self.floorpoly = pymunk.Segment(self.floor, (0, window_height),
-                                        (window_width, window_height), 5)
-        self.space.add(self.floor, self.floorpoly)
-
         self.init_objects()
 
     def init_objects(self):
