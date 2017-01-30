@@ -2,7 +2,7 @@
 # Author: Matthew  Goff, Nik Lockwood
 # Winter 2017
 # Personal access token for Nik's computer
-# 931d9542e4215563c5cc1532840f4cf36ff23e37
+# .
 
 import pygame
 from bird import Bird
