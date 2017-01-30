@@ -14,9 +14,10 @@ class Bird(game_objects.Ball, pygame.sprite.Sprite):
                  radius,
                  mass,
                  physics_environment,
-                 image,
                  identifier):
+
         pygame.sprite.Sprite.__init__(self)
+
         game_objects.Ball.__init__(self, position, velocity, radius, identifier)
         self.physics_environment = physics_environment
         self.mass = mass

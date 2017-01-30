@@ -212,7 +212,7 @@ class AngryBirds:
             self.window.fill(AngryBirds.WINDOW_COLOR)
 
             self.slingshots.draw(self.window)
-            self.birds.draw(self.window)
+            self.birds.update(self.window)
             self.crates.draw(self.window)
 
         pygame.display.update()
