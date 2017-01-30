@@ -16,7 +16,7 @@ from crate import Crate
 from ice import Ice
 from stone import Stone
 from moss import Moss
-from Levels import Level
+from sheep import Sheep
 
 
 class AngryBirds:
@@ -74,36 +74,38 @@ class AngryBirds:
         h.begin = collision
 
         self.birds = pygame.sprite.Group()
+        self.enemies = pygame.sprite.Group()
+        self.blocks = pygame.sprite.Group()
         self.slingshots = pygame.sprite.Group()
-        #self.crates = pygame.sprite.Group()
-        self.blocks = []
 
         self.slingshot = Slingshot(util.Vec2D(300, self.window_height - 300),
                                    50, "slingshot")
         self.slingshots.add(self.slingshot)
 
-        self.init_objects()
+        self.init_level1()
 
-    def init_objects(self):
-
+    def init_level1(self):
         self.birds = pygame.sprite.Group()
-        '''
-        self.crates = pygame.sprite.Group()
+        self.enemies = pygame.sprite.Group()
+        self.blocks = pygame.sprite.Group()
+        self.enemies.add(Sheep((400, 400), (0, 0), 100, 100, "sheep"))
+        self.blocks.add(Moss((500, 500), (0, 0), 100, 100, "moss"))
+        self.blocks.add(Crate((600, 600), (0, 0), 100, 100, "crate"))
+        self.blocks.add(Stone((700, 700), (0, 0), 100, 100, "stone"))
+        self.blocks.add(Ice((800, 800), (0, 0), 100, 100, "Ice"))
 
-        crate = Crate(util.Vec2D(500, 500),
-                      util.Vec2D(0, 0),
-                      100,
-                      100,
-                      "crate")
-        self.space.add(crate, crate.poly)
+        for i in range(0, 50):
+            xpos = i * 50
+            ypos = self.window_height - 50
+            mymoss = Moss((xpos, ypos), (0, 0), 50, 50,
+                          "moss")
+            self.blocks.add(mymoss)
 
-        self.crates.add(crate)
-        '''
-        currentBlocks = Level(self.window_width, self.window_height)
-        self.blocks = currentBlocks.setup(0)
-        for i in self.blocks:
-            for k in i:
-                self.space.add(k, k.poly)
+        for enemy in self.enemies:
+            self.space.add(enemy, enemy.poly)
+
+        for block in self.blocks:
+            self.space.add(block, block.poly)
 
     def run_game(self):
         self.running = True
@@ -128,7 +130,7 @@ class AngryBirds:
                     self.firing = True
                 elif event.key == pygame.K_r:
                     self.instructions = False
-                    self.init_objects()
+                    self.init_level1()
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
 
@@ -175,27 +177,27 @@ class AngryBirds:
     def apply_rules(self):
 
         if self.pulling:
-            bird = stoneBird(self.slingshot.position,
-                             self.launch_velocity,
+            bird = stoneBird(self.slingshot.position.to_tuple(),
+                             self.launch_velocity.to_tuple(),
                              "new")
             if self.birdType == 1:
-                bird = stoneBird(self.slingshot.position,
-                                 self.launch_velocity,
+                bird = stoneBird(self.slingshot.position.to_tuple(),
+                                 self.launch_velocity.to_tuple(),
                                  "new")
                 self.birdType = 2
             elif self.birdType == 2:
-                bird = iceBird(self.slingshot.position,
-                                 self.launch_velocity,
+                bird = iceBird(self.slingshot.position.to_tuple(),
+                                 self.launch_velocity.to_tuple(),
                                  "new")
                 self.birdType = 3
             elif self.birdType == 3:
-                bird = crateBird(self.slingshot.position,
-                                 self.launch_velocity,
+                bird = crateBird(self.slingshot.position.to_tuple(),
+                                 self.launch_velocity.to_tuple(),
                                  "new")
                 self.birdType = 4
             elif self.birdType == 4:
-                bird = BasicBird(self.slingshot.position,
-                                 self.launch_velocity,
+                bird = BasicBird(self.slingshot.position.to_tuple(),
+                                 self.launch_velocity.to_tuple(),
                                  "new")
                 self.birdType = 1
 
@@ -204,7 +206,6 @@ class AngryBirds:
             self.pulling = False
 
         if len(self.shootingBird) != 0:
-            print self.launch_velocity
             self.shootingBird[0].pullSpot(self.slingshot.position - self.launch_velocity)
 
         if self.firing and len(self.shootingBird) != 0:
@@ -249,8 +250,8 @@ class AngryBirds:
 
             self.slingshots.draw(self.window)
             self.birds.update(self.window)
-            for group in self.blocks:
-                group.draw(self.window)
+            self.enemies.draw(self.window)
+            self.blocks.draw(self.window)
 
         pygame.display.update()
 
@@ -268,5 +269,5 @@ class PhysicsEnvironment:
         self.gravity = gravity
         self.drag = drag
 
-angry_birds = AngryBirds(1920, 1080)
+angry_birds = AngryBirds(640*2, 480*2)
 angry_birds.run_game()

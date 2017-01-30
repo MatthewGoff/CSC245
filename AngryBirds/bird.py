@@ -19,8 +19,8 @@ class Bird(pymunk.Body, pygame.sprite.Sprite):
         pymunk.Body.__init__(self, mass, 1666)
         self.poly = pymunk.Circle(self, radius)
 
-        self.position = position.x, position.y
-        self.velocity = velocity.x, velocity.y
+        self.position = position[0], position[1]
+        self.velocity = velocity[0], velocity[1]
         self.identifier = identifier
 
         self.update_rect()

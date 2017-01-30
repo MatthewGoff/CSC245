@@ -21,8 +21,8 @@ class Block(pymunk.Body, pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         pymunk.Body.__init__(self, mass, moment, body_type)
         self.poly = pymunk.Poly.create_box(self, size=(width, height))
-        self.position = position.x, position.y
-        self.velocity = velocity.x, velocity.y
+        self.position = position[0], position[1]
+        self.velocity = velocity[0], velocity[1]
         self.identifier = identifier
 
         self.init_image = pygame.transform.smoothscale(
