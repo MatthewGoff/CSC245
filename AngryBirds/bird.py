@@ -38,5 +38,10 @@ class Bird(game_objects.Ball, pygame.sprite.Sprite):
         acceleration = self.physics_environment.gravity
         self.velocity += acceleration
         self.position += self.velocity
-
+     #   print "a " + acceleration
+     #   print "v " + self.velocity
+     #   print "p " + self.position
         self.update_rect()
+
+    def setVel(self, velocity):
+        self.velocity = velocity

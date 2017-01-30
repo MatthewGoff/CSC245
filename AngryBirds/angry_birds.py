@@ -10,6 +10,9 @@ from crateBird import crateBird
 from stoneBird import stoneBird
 from slingshot import Slingshot
 from crate import Crate
+from ice import Ice
+from stone import Stone
+from moss import Moss
 
 
 class AngryBirds:
@@ -125,6 +128,10 @@ class AngryBirds:
         self.takedown()
 
     def handle_events(self):
+        #bird = BasicBird(self.slingshot.position,
+         #                0,
+          #               self.physics_environment,
+           #              "new")
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
@@ -143,11 +150,7 @@ class AngryBirds:
                 target = event.dict['pos']
                 if button_pressed == 1: # Left click targets
                     self.mouse_origin = util.Vec2D(target[0], target[1])
-                    bird = stoneBird(self.slingshot.position,
-                                     0,
-                                     self.physics_environment,
-                                     "new")
-                    self.birds.add(bird)
+                #    self.birds.add(bird)
                 elif button_pressed == 3: # Right click fires
                     pass
 
@@ -162,7 +165,9 @@ class AngryBirds:
                     mouse_end = util.Vec2D(target[0], target[1])
                     self.launch_velocity = self.mouse_origin - mouse_end
                     self.launch_velocity *= AngryBirds.LAUNCH_SPEED
-                    self.birdsInPlay.add(self.birds[-1])
+                    #bird.velocity = self.launch_velocity
+                    #print self.launch_velocity
+                    #self.birdsInPlay.add(bird)
 
 
                 elif button_pressed == 3: # Right click fires
@@ -172,23 +177,23 @@ class AngryBirds:
 
     def apply_rules(self):
         if self.firing:
-            #bird = stoneBird(self.slingshot.position,
-            #            self.launch_velocity,
-            #            self.physics_environment,
-            #            "new")
-            #self.birds.add(bird)
+            bird = stoneBird(self.slingshot.position,
+                        self.launch_velocity,
+                        self.physics_environment,
+                        "new")
+            self.birds.add(bird)
             self.firing = False
 
         self.quadtree.insert_many(self.birds)
         self.quadtree.insert_many(self.crates)
 
-        for bird in self.birds:
-            neighbors = self.quadtree.get_neighbors(bird)
-            for neighbor in neighbors:
-                self.resolve_collision(neighbor, bird)
+#        for bird in self.birds:
+#            neighbors = self.quadtree.get_neighbors(bird)
+#            for neighbor in neighbors:
+#                self.resolve_collision(neighbor, bird)
 
     def simulate(self):
-        for bird in self.birdsInPlay:
+        for bird in self.birds:
             bird.simulate()
 
     def takedown(self):
