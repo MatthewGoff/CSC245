@@ -19,6 +19,7 @@ class Level:
         self.window_height = window_height
         self.levels = []
         self.level1 = [[1,400,400],[2,500,500],[3,600,600],[4,700,700],[5,800,800]]
+        self.scale = 100
         self.levels.append(self.level1)
 
     def setup(self, num):
@@ -30,15 +31,15 @@ class Level:
         blocks = []
         for i in self.levels[num]:
             if i[0] == 1:
-                enemies.add(Sheep(util.Vec2D(500, 500),util.Vec2D(0, 0),50,50,"sheep"))
+                enemies.add(Sheep(util.Vec2D(i[1], i[2]),util.Vec2D(0, 0),self.scale,self.scale,"sheep"))
             elif i[0] == 2:
-                moss.add(Moss(util.Vec2D(500, 500),util.Vec2D(0, 0), 50, 50, "moss"))
+                moss.add(Moss(util.Vec2D(i[1], i[2]),util.Vec2D(0, 0),self.scale,self.scale, "moss"))
             elif i[0] == 3:
-                crates.add(Crate(util.Vec2D(500, 500),util.Vec2D(0, 0), 50, 50, "crate"))
+                crates.add(Crate(util.Vec2D(i[1], i[2]),util.Vec2D(0, 0),self.scale,self.scale, "crate"))
             elif i[0] == 4:
-                stones.add(Stone(util.Vec2D(500, 500),util.Vec2D(0, 0), 50, 50, "stone"))
+                stones.add(Stone(util.Vec2D(i[1], i[2]),util.Vec2D(0, 0),self.scale,self.scale, "stone"))
             elif i[0] == 5:
-                ice.add(Ice(util.Vec2D(500, 500),util.Vec2D(0, 0), 50, 50, "Ice"))
+                ice.add(Ice(util.Vec2D(i[1], i[2]),util.Vec2D(0, 0),self.scale,self.scale, "Ice"))
 
         for i in range(0, 50):
             xpos = i*50

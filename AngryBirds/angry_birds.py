@@ -32,6 +32,8 @@ class AngryBirds:
 
         self.shootingBird = []
 
+        self.birdType = 1
+
         self.running = False
         self.instructions = True
         self.firing = False
@@ -173,9 +175,30 @@ class AngryBirds:
     def apply_rules(self):
 
         if self.pulling:
-            bird = BasicBird(self.slingshot.position,
+            bird = stoneBird(self.slingshot.position,
                              self.launch_velocity,
                              "new")
+            if self.birdType == 1:
+                bird = stoneBird(self.slingshot.position,
+                                 self.launch_velocity,
+                                 "new")
+                self.birdType = 2
+            elif self.birdType == 2:
+                bird = iceBird(self.slingshot.position,
+                                 self.launch_velocity,
+                                 "new")
+                self.birdType = 3
+            elif self.birdType == 3:
+                bird = crateBird(self.slingshot.position,
+                                 self.launch_velocity,
+                                 "new")
+                self.birdType = 4
+            elif self.birdType == 4:
+                bird = BasicBird(self.slingshot.position,
+                                 self.launch_velocity,
+                                 "new")
+                self.birdType = 1
+
             self.birds.add(bird)
             self.shootingBird.append(bird)
             self.pulling = False

@@ -16,7 +16,7 @@ class Bird(pymunk.Body, pygame.sprite.Sprite):
                  identifier):
 
         pygame.sprite.Sprite.__init__(self)
-        pymunk.Body.__init__(self, 1, 1666)
+        pymunk.Body.__init__(self, mass, 1666)
         self.poly = pymunk.Circle(self, radius)
 
         self.position = position.x, position.y
