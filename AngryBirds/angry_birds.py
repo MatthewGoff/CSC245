@@ -36,6 +36,8 @@ class AngryBirds:
 
         self.mute = False
 
+        self.score = 0;
+
         self.shootingBird = []
 
         self.birdType = 1
@@ -57,6 +59,7 @@ class AngryBirds:
         self.space.damping = 1
 
         def collision(arbiter, space, data):
+            self.score += 100;
             if (issubclass(arbiter.shapes[0].body.__class__, Crate)) or (issubclass(arbiter.shapes[1].body.__class__, Crate)):
                 self.wood.play(0,400)
             elif(issubclass(arbiter.shapes[0].body.__class__, Ice)) or (issubclass(arbiter.shapes[1].body.__class__, Ice)):
@@ -202,6 +205,7 @@ class AngryBirds:
             bird = stoneBird(self.slingshot.position.to_tuple(),
                              self.launch_velocity.to_tuple(),
                              "new")
+            self.score -= 5
             if self.birdType == 1:
                 bird = stoneBird(self.slingshot.position.to_tuple(),
                                  self.launch_velocity.to_tuple(),
