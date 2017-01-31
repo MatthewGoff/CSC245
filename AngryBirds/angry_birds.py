@@ -4,7 +4,7 @@
 
 import pygame
 import pymunk
-from GameEngine import util, game_objects
+from GameEngine import util
 from block import Block
 from bird import Bird
 from BasicBird import BasicBird
@@ -39,8 +39,8 @@ class AngryBirds:
 
         self.font = pygame.font.Font(None, 80)
 
-        self.score = 0;
-        self.currentLevel = 0;
+        self.score = 0
+        self.currentLevel = 0
 
         self.shootingBird = []
 
