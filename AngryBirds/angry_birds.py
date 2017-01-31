@@ -28,6 +28,7 @@ class AngryBirds:
         print "Seed = " + str(util.get_seed())
         pygame.init()
         pygame.mixer.init()
+
         self.wood = pygame.mixer.Sound("audio/wood.wav")
         self.stone = pygame.mixer.Sound("audio/stone.wav")
         self.ice = pygame.mixer.Sound("audio/ice.wav")
@@ -37,6 +38,7 @@ class AngryBirds:
         self.mute = False
 
         self.score = 0;
+        self.currentLevel = 0;
 
         self.shootingBird = []
 
@@ -201,6 +203,11 @@ class AngryBirds:
 
     def apply_rules(self):
 
+        if len(self.enemies) == 0:
+            self.instructions = False
+            self.currentLevel += 1
+            self.init_level(self.currentLevel)
+
         if self.pulling:
             bird = stoneBird(self.slingshot.position.to_tuple(),
                              self.launch_velocity.to_tuple(),
@@ -272,6 +279,11 @@ class AngryBirds:
                            50,
                            text_color)
         else:
+            util.draw_text(self.window,
+                           "Score: " + self.score,
+                           (50, 50),
+                           100,
+                           pygame.Color("Black"))
             self.window.fill(AngryBirds.WINDOW_COLOR)
 
             self.slingshots.draw(self.window)

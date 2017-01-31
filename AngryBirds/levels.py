@@ -42,7 +42,7 @@ class Levels:
 
     def get_level(self, i):
         self.init_levels()
-        return self.levels[i]
+        return self.levels[i%3]
 
 
 class Level:
