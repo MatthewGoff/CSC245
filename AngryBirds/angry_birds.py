@@ -75,14 +75,17 @@ class AngryBirds:
 
             if (issubclass(arbiter.shapes[0].body.__class__, Bird)
                 and issubclass(arbiter.shapes[1].body.__class__, Block)
-                and not issubclass(arbiter.shapes[1].body.__class__, Moss)):
+                and not issubclass(arbiter.shapes[1].body.__class__, Moss)
+                and not issubclass(arbiter.shapes[1].body.__class__, Stone)):
                 bird = arbiter.shapes[0]
                 block = arbiter.shapes[1]
             elif (issubclass(arbiter.shapes[0].body.__class__, Block)
                 and issubclass(arbiter.shapes[1].body.__class__, Bird)
-                and not issubclass(arbiter.shapes[0].body.__class__, Moss)):
+                and not issubclass(arbiter.shapes[0].body.__class__, Moss)
+                and not issubclass(arbiter.shapes[0].body.__class__, Stone)):
                 bird = arbiter.shapes[1]
                 block = arbiter.shapes[0]
+
             else:
                 return True
 
@@ -282,7 +285,7 @@ class AngryBirds:
         else:
             self.window.fill(AngryBirds.WINDOW_COLOR)
 
-            what = self.font.render("Level: " + str(self.currentLevel) + "Score: " + str(self.score), True, pygame.Color("Black"))
+            what = self.font.render("Level: " + str(self.currentLevel) + "     Score: " + str(self.score), True, pygame.Color("Black"))
             self.window.blit(what, (100, 100))
             self.slingshots.draw(self.window)
             self.birds.update(self.window)
@@ -305,5 +308,5 @@ class PhysicsEnvironment:
         self.gravity = gravity
         self.drag = drag
 
-angry_birds = AngryBirds(640*2, 480*2)
+angry_birds = AngryBirds(1920, 1080)
 angry_birds.run_game()

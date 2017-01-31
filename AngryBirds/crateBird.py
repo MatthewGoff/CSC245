@@ -8,7 +8,7 @@ import GameEngine.util
 import pyganim
 
 class crateBird(Bird):
-    MASS = 2
+    MASS = .5
     RADIUS = 50
 
     def __init__(self, position, velocity, identifier):
