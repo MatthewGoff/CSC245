@@ -35,7 +35,10 @@ class Levels:
         level2.blocks.add(Stone((700, 700), (0, 0), 100, 100, "stone"))
         level2.blocks.add(Ice((800, 800), (0, 0), 100, 100, "Ice"))
 
-        self.levels = [level1, level2]
+        level3 = Level()
+        level3.blocks.add(Moss((800, 800), (0, 0), 200, 200, "The wall"))
+
+        self.levels = [level1, level2, level3]
 
     def get_level(self, i):
         self.init_levels()
@@ -45,8 +48,8 @@ class Levels:
 class Level:
 
     def __init__(self):
-        self.enemies = pygame.sprite.Group()
-        self.blocks = pygame.sprite.Group()
+        self.enemies = copy.copy(pygame.sprite.Group())
+        self.blocks = copy.copy(pygame.sprite.Group())
 
     def get_enemies(self):
         return self.enemies
