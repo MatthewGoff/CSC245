@@ -27,8 +27,13 @@ class AngryBirds:
         print "Seed = " + str(util.get_seed())
         pygame.init()
         pygame.mixer.init()
-        self.bounce_sound = pygame.mixer.Sound("audio/wood.wav")
-        self.mute = True
+        self.wood = pygame.mixer.Sound("audio/wood.wav")
+        self.stone = pygame.mixer.Sound("audio/stone.wav")
+        self.ice = pygame.mixer.Sound("audio/ice.wav")
+        self.bleep = pygame.mixer.Sound("audio/bleep.wav")
+        self.moss = pygame.mixer.Sound("audio/moss.wav")
+
+        self.mute = False
 
         self.shootingBird = []
 
@@ -51,6 +56,15 @@ class AngryBirds:
         self.space.damping = 1
 
         def collision(arbiter, space, data):
+            if (issubclass(arbiter.shapes[0].body.__class__, Crate)) or (issubclass(arbiter.shapes[1].body.__class__, Crate)):
+                self.wood.play(0,400)
+            elif(issubclass(arbiter.shapes[0].body.__class__, Ice)) or (issubclass(arbiter.shapes[1].body.__class__, Ice)):
+                self.ice.play(0,400)
+            elif (issubclass(arbiter.shapes[0].body.__class__, Stone)) or (issubclass(arbiter.shapes[1].body.__class__, Stone)):
+                self.stone.play(0, 400)
+            elif (issubclass(arbiter.shapes[0].body.__class__, Moss)) or (issubclass(arbiter.shapes[1].body.__class__, Moss)):
+                self.moss.play(0, 400)
+
             if (issubclass(arbiter.shapes[0].body.__class__, Bird)
                 and issubclass(arbiter.shapes[1].body.__class__, Block)
                 and not issubclass(arbiter.shapes[1].body.__class__, Moss)):
