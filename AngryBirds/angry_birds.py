@@ -28,6 +28,7 @@ class AngryBirds:
         print "Seed = " + str(util.get_seed())
         pygame.init()
         pygame.mixer.init()
+
         self.wood = pygame.mixer.Sound("audio/wood.wav")
         self.stone = pygame.mixer.Sound("audio/stone.wav")
         self.ice = pygame.mixer.Sound("audio/ice.wav")
@@ -35,6 +36,9 @@ class AngryBirds:
         self.moss = pygame.mixer.Sound("audio/moss.wav")
 
         self.mute = False
+
+        self.score = 0;
+        self.currentLevel = 0;
 
         self.shootingBird = []
 
@@ -57,6 +61,7 @@ class AngryBirds:
         self.space.damping = 1
 
         def collision(arbiter, space, data):
+            self.score += 100;
             if (issubclass(arbiter.shapes[0].body.__class__, Crate)) or (issubclass(arbiter.shapes[1].body.__class__, Crate)):
                 self.wood.play(0,400)
             elif(issubclass(arbiter.shapes[0].body.__class__, Ice)) or (issubclass(arbiter.shapes[1].body.__class__, Ice)):
@@ -198,10 +203,16 @@ class AngryBirds:
 
     def apply_rules(self):
 
+        if len(self.enemies) == 0:
+            self.instructions = False
+            self.currentLevel += 1
+            self.init_level(self.currentLevel)
+
         if self.pulling:
             bird = stoneBird(self.slingshot.position.to_tuple(),
                              self.launch_velocity.to_tuple(),
                              "new")
+            self.score -= 5
             if self.birdType == 1:
                 bird = stoneBird(self.slingshot.position.to_tuple(),
                                  self.launch_velocity.to_tuple(),
@@ -269,7 +280,11 @@ class AngryBirds:
                            text_color)
         else:
             self.window.fill(AngryBirds.WINDOW_COLOR)
-
+            util.draw_text(self.window,
+                           "Score: " + str(self.score),
+                           (250, 50),
+                           50,
+                           pygame.Color("Black"))
             self.slingshots.draw(self.window)
             self.birds.update(self.window)
             self.enemies.draw(self.window)
