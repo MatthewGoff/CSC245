@@ -37,6 +37,7 @@ class Levels:
 
         level3 = Level()
         level3.blocks.add(Moss((800, 800), (0, 0), 200, 200, "The wall"))
+        level3.blocks.add(Moss((100, 800), (0, 0), 200, 200, "back wall"))
 
         self.levels = [level1, level2, level3]
 
