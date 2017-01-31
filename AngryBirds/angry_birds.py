@@ -162,6 +162,9 @@ class AngryBirds:
                 elif event.key == pygame.K_3:
                     self.instructions = False
                     self.init_level(3)
+                elif event.key == pygame.K_4:
+                    self.instructions = False
+                    self.init_level(4)
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
 
