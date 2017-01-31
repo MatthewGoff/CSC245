@@ -37,6 +37,8 @@ class AngryBirds:
 
         self.mute = False
 
+        self.font = pygame.font.Font(None, 80)
+
         self.score = 0;
         self.currentLevel = 0;
 
@@ -285,8 +287,8 @@ class AngryBirds:
                            (50, 50),
                            100,
                            pygame.Color("Black"))
-            what = pygame.font.Font.render("Level: " + str(self.currentLevel) + "Score: " + str(self.score), True, pygame.Color("Black"), background=None)
-            what.blit(self.window, (100, 100))
+            what = self.font.render("Level: " + str(self.currentLevel) + "Score: " + str(self.score), True, pygame.Color("Black"), background=None)
+            self.window.blit(what, (100, 100))
             self.slingshots.draw(self.window)
             self.birds.update(self.window)
             self.enemies.draw(self.window)
