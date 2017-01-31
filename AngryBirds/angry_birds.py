@@ -285,11 +285,6 @@ class AngryBirds:
                            text_color)
         else:
             self.window.fill(AngryBirds.WINDOW_COLOR)
-            util.draw_text(self.window,
-                           "Score: " + self.score,
-                           (50, 50),
-                           100,
-                           pygame.Color("Black"))
             what = self.font.render("Level: " + str(self.currentLevel) + "     Score: " + str(self.score), True, pygame.Color("Black"), background=None)
             self.window.blit(what, (100, 100))
             self.slingshots.draw(self.window)
