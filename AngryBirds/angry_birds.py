@@ -17,6 +17,7 @@ from ice import Ice
 from stone import Stone
 from moss import Moss
 from sheep import Sheep
+from levels import Levels
 
 
 class AngryBirds:
@@ -96,29 +97,30 @@ class AngryBirds:
                                    50, "slingshot")
         self.slingshots.add(self.slingshot)
 
-        self.init_level1()
+        self.levels = Levels(window_width, window_height)
 
-    def init_level1(self):
+    def clear_space(self):
+        for bird in self.birds:
+            self.space.remove(bird.poly)
+        for enemy in self.enemies:
+            self.space.remove(enemy.poly)
+        for block in self.blocks:
+            self.space.remove(block.poly)
+
+    def init_level(self, i):
+        level = self.levels.get_level(i-1)
+
+        self.clear_space()
         self.birds = pygame.sprite.Group()
-        self.enemies = pygame.sprite.Group()
-        self.blocks = pygame.sprite.Group()
-        self.enemies.add(Sheep((400, 400), (0, 0), 100, 100, "sheep"))
-        self.blocks.add(Moss((500, 500), (0, 0), 100, 100, "moss"))
-        self.blocks.add(Crate((600, 600), (0, 0), 100, 100, "crate"))
-        self.blocks.add(Stone((700, 700), (0, 0), 100, 100, "stone"))
-        self.blocks.add(Ice((800, 800), (0, 0), 100, 100, "Ice"))
-
-        for i in range(0, 50):
-            xpos = i * 50
-            ypos = self.window_height - 50
-            mymoss = Moss((xpos, ypos), (0, 0), 50, 50,
-                          "moss")
-            self.blocks.add(mymoss)
+        self.enemies = level.get_enemies()
+        self.blocks = level.get_blocks()
 
         for enemy in self.enemies:
+            print str(enemy.identifier)
             self.space.add(enemy, enemy.poly)
 
         for block in self.blocks:
+            print str(block.identifier)
             self.space.add(block, block.poly)
 
     def run_game(self):
@@ -142,9 +144,15 @@ class AngryBirds:
                     self.mute = not self.mute
                 elif event.key == pygame.K_SPACE:
                     self.firing = True
-                elif event.key == pygame.K_r:
+                elif event.key == pygame.K_1:
                     self.instructions = False
-                    self.init_level1()
+                    self.init_level(1)
+                elif event.key == pygame.K_2:
+                    self.instructions = False
+                    self.init_level(2)
+                elif event.key == pygame.K_3:
+                    self.instructions = False
+                    self.init_level(3)
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
 
@@ -255,7 +263,7 @@ class AngryBirds:
                            50,
                            text_color)
             util.draw_text(self.window,
-                           "Press 'R' to start/restart",
+                           "Press '1-3' to start a level",
                            (self.window_width/2, 400),
                            50,
                            text_color)
