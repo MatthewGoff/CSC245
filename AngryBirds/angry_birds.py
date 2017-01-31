@@ -22,7 +22,7 @@ from levels import Levels
 
 class AngryBirds:
     WINDOW_COLOR = pygame.Color("lightblue")
-    LAUNCH_SPEED = .05  # active
+    LAUNCH_SPEED = .3  # active
 
     def __init__(self, window_width, window_height):
         print "Seed = " + str(util.get_seed())
@@ -48,6 +48,7 @@ class AngryBirds:
 
         self.running = False
         self.instructions = True
+        self.win_screen = False
         self.firing = False
         self.pulling = False
         self.mouse_origin = util.Vec2D(0, 0)
@@ -59,41 +60,49 @@ class AngryBirds:
                                                self.window_height))
 
         self.space = pymunk.Space()
-        self.space.gravity = 0, 1
+        self.space.gravity = 0, 3
         self.space.damping = 1
 
         def collision(arbiter, space, data):
-            self.score += 100;
-            if (issubclass(arbiter.shapes[0].body.__class__, Crate)) or (issubclass(arbiter.shapes[1].body.__class__, Crate)):
-                self.wood.play(0,400)
-            elif(issubclass(arbiter.shapes[0].body.__class__, Ice)) or (issubclass(arbiter.shapes[1].body.__class__, Ice)):
-                self.ice.play(0,400)
-            elif (issubclass(arbiter.shapes[0].body.__class__, Stone)) or (issubclass(arbiter.shapes[1].body.__class__, Stone)):
-                self.stone.play(0, 400)
-            elif (issubclass(arbiter.shapes[0].body.__class__, Moss)) or (issubclass(arbiter.shapes[1].body.__class__, Moss)):
-                self.moss.play(0, 400)
-
             if (issubclass(arbiter.shapes[0].body.__class__, Bird)
-                and issubclass(arbiter.shapes[1].body.__class__, Block)
-                and not issubclass(arbiter.shapes[1].body.__class__, Moss)
-                and not issubclass(arbiter.shapes[1].body.__class__, Stone)):
+                and issubclass(arbiter.shapes[1].body.__class__, Block)):
                 bird = arbiter.shapes[0]
                 block = arbiter.shapes[1]
             elif (issubclass(arbiter.shapes[0].body.__class__, Block)
-                and issubclass(arbiter.shapes[1].body.__class__, Bird)
-                and not issubclass(arbiter.shapes[0].body.__class__, Moss)
-                and not issubclass(arbiter.shapes[0].body.__class__, Stone)):
+                and issubclass(arbiter.shapes[1].body.__class__, Bird)):
                 bird = arbiter.shapes[1]
                 block = arbiter.shapes[0]
-
             else:
                 return True
 
-            space.remove(bird, bird.body)
-            space.remove(block, block.body)
-            bird.body.kill()
-            block.body.kill()
-            return False
+            if issubclass(block.body.__class__, Crate):
+                if not self.mute: self.wood.play(0, 400)
+                space.remove(bird, bird.body)
+                space.remove(block, block.body)
+                bird.body.kill()
+                block.body.kill()
+                return False
+            elif issubclass(block.body.__class__, Ice):
+                if not self.mute: self.ice.play(0, 400)
+                space.remove(bird, bird.body)
+                space.remove(block, block.body)
+                bird.body.kill()
+                block.body.kill()
+                return False
+            elif issubclass(block.body.__class__, Sheep):
+                self.score += 100
+                if not self.mute: self.wood.play(0, 400)
+                space.remove(bird, bird.body)
+                space.remove(block, block.body)
+                bird.body.kill()
+                block.body.kill()
+                return False
+            elif issubclass(block.body.__class__, Stone):
+                if not self.mute: self.stone.play(0, 400)
+                return True
+            elif issubclass(block.body.__class__, Moss):
+                if not self.mute: self.moss.play(0, 400)
+                return True
 
         h = self.space.add_default_collision_handler()
         h.begin = collision
@@ -103,7 +112,7 @@ class AngryBirds:
         self.blocks = pygame.sprite.Group()
         self.slingshots = pygame.sprite.Group()
 
-        self.slingshot = Slingshot(util.Vec2D(300, self.window_height - 300),
+        self.slingshot = Slingshot(util.Vec2D(125, self.window_height - 370),
                                    50, "slingshot")
         self.slingshots.add(self.slingshot)
 
@@ -152,7 +161,7 @@ class AngryBirds:
                 if event.key == pygame.K_m:
                     self.mute = not self.mute
                 elif event.key == pygame.K_SPACE:
-                    self.firing = True
+                    self.instructions = False
                 elif event.key == pygame.K_1:
                     self.instructions = False
                     self.init_level(1)
@@ -206,14 +215,14 @@ class AngryBirds:
                 self.launch_velocity = self.mouse_origin - mouse_end
                 self.launch_velocity *= AngryBirds.LAUNCH_SPEED
 
-        keys = pygame.key.get_pressed()
-
     def apply_rules(self):
 
-        '''if len(self.enemies) == 0:
+        if len(self.enemies) == 0:
             self.instructions = False
             self.currentLevel += 1
-            self.init_level(self.currentLevel)'''
+            self.init_level(self.currentLevel)
+            if self.currentLevel == 4:
+                self.win_screen = True
 
         if self.pulling:
             bird = stoneBird(self.slingshot.position.to_tuple(),
@@ -281,10 +290,48 @@ class AngryBirds:
                            50,
                            text_color)
             util.draw_text(self.window,
-                           "Press '1-3' to start a level",
-                           (self.window_width/2, 400),
+                           "Kill all sheep to proceed",
+                           (self.window_width/2, 350),
                            50,
                            text_color)
+            util.draw_text(self.window,
+                           "See if you can beat all 3 levels:",
+                           (self.window_width / 2, 400),
+                           50,
+                           text_color)
+            util.draw_text(self.window,
+                           "1) The Fortress",
+                           (self.window_width / 2, 450),
+                           40,
+                           text_color)
+            util.draw_text(self.window,
+                           "2) Hiding in plain sight",
+                           (self.window_width / 2, 500),
+                           40,
+                           text_color)
+            util.draw_text(self.window,
+                           "3) The best defense",
+                           (self.window_width / 2, 550),
+                           40,
+                           text_color)
+            util.draw_text(self.window,
+                           "Press space to start",
+                           (self.window_width / 2, 700),
+                           50,
+                           text_color)
+
+        elif self.win_screen:
+            self.window.fill(pygame.Color("blue"))
+            util.draw_text(self.window,
+                           "You Won!?",
+                           (self.window_width / 2, 100),
+                           100,
+                           pygame.Color("pink"))
+            util.draw_text(self.window,
+                           "Your score was: "+str(self.score),
+                           (self.window_width / 2, 100),
+                           100,
+                           pygame.Color("pink"))
         else:
             self.window.fill(AngryBirds.WINDOW_COLOR)
 
@@ -303,13 +350,6 @@ class AngryBirds:
                            bird.__str__(),
                            bird.get_position().to_tuple(),
                            24)
-
-
-class PhysicsEnvironment:
-
-    def __init__(self, gravity, drag):
-        self.gravity = gravity
-        self.drag = drag
 
 angry_birds = AngryBirds(1920, 1080)
 angry_birds.run_game()

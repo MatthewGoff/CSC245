@@ -22,66 +22,39 @@ class Levels:
 
     def init_levels(self):
         level1 = Level()
-        level1.enemies.add(Sheep((800, 400), (0, 0), 100, 100, "sheep"))
-        level1.blocks.add(Moss((150, 1030), (0, 0), 100, 300, "moss"))
-        level1.blocks.add(Moss((450, 1030), (0, 0), 100, 300, "moss"))
-        level1.blocks.add(Moss((550, 1030), (0, 0), 100, 100, "moss"))
-        level1.blocks.add(Moss((650, 1030), (0, 0), 100, 100, "moss"))
-        level1.blocks.add(Moss((750, 1030), (0, 0), 100, 100, "moss"))
-        level1.blocks.add(Moss((850, 1030), (0, 0), 100, 100, "moss"))
-        level1.blocks.add(Moss((950, 1030), (0, 0), 100, 100, "moss"))
-        level1.blocks.add(Moss((1150, 1030), (0, 0), 100, 300, "moss"))
-        level1.blocks.add(Moss((1450, 1030), (0, 0), 100, 300, "moss"))
-        level1.blocks.add(Moss((1750, 1030), (0, 0), 100, 300, "moss"))
-        level1.blocks.add(Moss((1750, 780), (0, 0), 400, 100, "moss"))
-        level1.blocks.add(Moss((1750, 380), (0, 0), 400, 100, "moss"))
-        level1.blocks.add(Crate((600, 600), (0, 0), 100, 100, "crate"))
-        level1.blocks.add(Stone((700, 700), (0, 0), 100, 100, "stone"))
-        level1.blocks.add(Ice((800, 800), (0, 0), 100, 100, "Ice"))
+        self.generate_ground(level1)
+        for i in range(2, 8):
+            level1.blocks.add(Crate((1200, self.window_height - 102*i), (0, 0), 100, 100, "crate"))
+        level1.blocks.add(Stone((1500, self.window_height - 310), (0, 0), 200, 200, "stone"))
+        level1.enemies.add(Sheep((1500, self.window_height - 400), (0, 0), 100, 100, "sheep"))
 
         level2 = Level()
-        level2.enemies.add(Sheep((900, 900), (0, 0), 100, 100, "sheep"))
-        level2.enemies.add(Sheep((300, 900), (0, 0), 100, 100, "sheep"))
-        level2.blocks.add(Moss((150, 1030), (0, 0), 100, 300, "moss"))
-        level2.blocks.add(Moss((450, 1030), (0, 0), 100, 300, "moss"))
-        level2.blocks.add(Moss((550, 1030), (0, 0), 100, 100, "moss"))
-        level2.blocks.add(Moss((650, 1030), (0, 0), 100, 100, "moss"))
-        level2.blocks.add(Moss((750, 1030), (0, 0), 100, 100, "moss"))
-        level2.blocks.add(Moss((850, 1030), (0, 0), 100, 100, "moss"))
-        level2.blocks.add(Moss((950, 1030), (0, 0), 100, 100, "moss"))
-        level2.blocks.add(Moss((1150, 1030), (0, 0), 100, 300, "moss"))
-        level2.blocks.add(Moss((1450, 1030), (0, 0), 100, 300, "moss"))
-        level2.blocks.add(Moss((1750, 1030), (0, 0), 100, 300, "moss"))
-        level2.blocks.add(Moss((1750, 780), (0, 0), 400, 100, "moss"))
-        level2.blocks.add(Moss((1750, 380), (0, 0), 400, 100, "moss"))
-        level2.blocks.add(Crate((600, 600), (0, 0), 100, 100, "crate"))
-        level2.blocks.add(Stone((700, 700), (0, 0), 100, 100, "stone"))
-        level2.blocks.add(Ice((800, 800), (0, 0), 100, 100, "Ice"))
+        self.generate_ground(level2)
+        level2.blocks.add(Crate((1200, self.window_height - 200), (0, 0), 100, 100, "crate"))
+        level2.blocks.add(Stone((1300, self.window_height - 200), (0, 0), 100, 100, "stone"))
+        level2.blocks.add(Ice((1400, self.window_height - 200), (0, 0), 100, 100, "Ice"))
+        level2.enemies.add(Sheep((1500, self.window_height - 200), (0, 0), 100, 100, "sheep"))
+        level2.enemies.add(Sheep((1000, self.window_height - 200), (0, 0), 100, 100, "sheep"))
 
         level3 = Level()
-        level3.blocks.add(Moss((150, 1030), (0, 0), 300, 100, "moss"))
-        level3.blocks.add(Moss((450, 1030), (0, 0), 300, 100, "moss"))
-        level3.blocks.add(Moss((550, 1030), (0, 0), 100, 100, "moss"))
-        level3.blocks.add(Moss((650, 1030), (0, 0), 100, 100, "moss"))
-        level3.blocks.add(Moss((750, 1030), (0, 0), 100, 100, "moss"))
-        level3.blocks.add(Moss((850, 1030), (0, 0), 100, 100, "moss"))
-        level3.blocks.add(Moss((950, 1030), (0, 0), 100, 100, "moss"))
-        level3.blocks.add(Moss((1150, 1030), (0, 0), 100, 300, "moss"))
-        level3.blocks.add(Moss((1450, 1030), (0, 0), 100, 300, "moss"))
-        level3.blocks.add(Moss((1750, 1030), (0, 0), 100, 300, "moss"))
-        level3.blocks.add(Moss((1750, 780), (0, 0), 400, 100, "moss"))
-        level3.blocks.add(Moss((1750, 380), (0, 0), 400, 100, "moss"))
+        self.generate_ground(level3)
+        level3.enemies.add(Ice((400, 900), (0, 0), 100, 100, "Ice"))
         level3.enemies.add(Sheep((300, 900), (0, 0), 100, 100, "sheep"))
 
-        level4 = Level()
-        level4.blocks.add(Moss((800, 800), (0, 0), 200, 200, "The wall"))
-        level4.blocks.add(Moss((100, 800), (0, 0), 200, 200, "back wall"))
+        self.levels = [level1, level2, level3]
 
-        self.levels = [level1, level2, level3, level4]
+    def generate_ground(self, level):
+        for i in range(0, 20):
+            level.blocks.add(Moss((25+i*100, self.window_height-100), (0, 0), 100, 100, "moss"))
+        for i in range(2, 11):
+            level.blocks.add(Moss((self.window_width - 75, self.window_height - 100*i), (0, 0), 100, 100, "moss"))
+
+        level.blocks.add(Moss((225, self.window_height - 200), (0, 0), 100, 100, "moss"))
+
 
     def get_level(self, i):
         self.init_levels()
-        return self.levels[i%4]
+        return self.levels[i%3]
 
 
 class Level:
