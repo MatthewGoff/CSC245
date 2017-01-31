@@ -37,6 +37,8 @@ class AngryBirds:
 
         self.mute = False
 
+        self.font = pygame.font.Font(None, 80)
+
         self.score = 0;
         self.currentLevel = 0;
 
@@ -202,10 +204,10 @@ class AngryBirds:
 
     def apply_rules(self):
 
-        if len(self.enemies) == 0:
+        '''if len(self.enemies) == 0:
             self.instructions = False
             self.currentLevel += 1
-            self.init_level(self.currentLevel)
+            self.init_level(self.currentLevel)'''
 
         if self.pulling:
             bird = stoneBird(self.slingshot.position.to_tuple(),
@@ -280,7 +282,8 @@ class AngryBirds:
         else:
             self.window.fill(AngryBirds.WINDOW_COLOR)
 
-
+            what = self.font.render("Level: " + str(self.currentLevel) + "Score: " + str(self.score), True, pygame.Color("Black"))
+            self.window.blit(what, (100, 100))
             self.slingshots.draw(self.window)
             self.birds.update(self.window)
             self.enemies.draw(self.window)

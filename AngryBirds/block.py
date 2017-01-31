@@ -35,12 +35,22 @@ class Block(pymunk.Body, pygame.sprite.Sprite):
     def update_rect(self):
         points = self.poly.get_vertices()
         top = float("inf")
+        bottom = -1*float("inf")
         left = float("inf")
+        right = -1*float("inf")
         for point in points:
             top = min(top, point.y)
+            bottom = max(bottom, point.y)
             left = min(left, point.x)
+            right = max(right, point.x)
 
+        x = self.position.x
+        y = self.position.y
+        one = self.position.x + left
+        two = self.position.y + top
+        three = bottom - top
+        four = right - left
         self.rect = pygame.Rect(self.position.x + left,
                                 self.position.y + top,
-                                self.poly.radius*2,
-                                self.poly.radius*2)
+                                bottom-top,
+                                right-left)
