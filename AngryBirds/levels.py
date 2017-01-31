@@ -53,22 +53,26 @@ class Levels:
         level2.blocks.add(Ice((800, 800), (0, 0), 100, 100, "Ice"))
 
         level3 = Level()
-        level1.blocks.add(Moss((150, 1030), (0, 0), 100, 300, "moss"))
-        level1.blocks.add(Moss((450, 1030), (0, 0), 100, 300, "moss"))
-        level1.blocks.add(Moss((550, 1030), (0, 0), 100, 100, "moss"))
-        level1.blocks.add(Moss((650, 1030), (0, 0), 100, 100, "moss"))
-        level1.blocks.add(Moss((750, 1030), (0, 0), 100, 100, "moss"))
-        level1.blocks.add(Moss((850, 1030), (0, 0), 100, 100, "moss"))
-        level1.blocks.add(Moss((950, 1030), (0, 0), 100, 100, "moss"))
-        level1.blocks.add(Moss((950, 780), (0, 0), 400, 100, "moss"))
-        level1.blocks.add(Moss((950, 380), (0, 0), 400, 100, "moss"))
-        level2.enemies.add(Sheep((300, 900), (0, 0), 100, 100, "sheep"))
+        level3.blocks.add(Moss((150, 1030), (0, 0), 300, 100, "moss"))
+        level3.blocks.add(Moss((450, 1030), (0, 0), 300, 100, "moss"))
+        level3.blocks.add(Moss((550, 1030), (0, 0), 100, 100, "moss"))
+        level3.blocks.add(Moss((650, 1030), (0, 0), 100, 100, "moss"))
+        level3.blocks.add(Moss((750, 1030), (0, 0), 100, 100, "moss"))
+        level3.blocks.add(Moss((850, 1030), (0, 0), 100, 100, "moss"))
+        level3.blocks.add(Moss((950, 1030), (0, 0), 100, 100, "moss"))
+        level3.blocks.add(Moss((950, 780), (0, 0), 100, 400, "moss"))
+        level3.blocks.add(Moss((950, 380), (0, 0), 100, 400, "moss"))
+        level3.enemies.add(Sheep((300, 900), (0, 0), 100, 100, "sheep"))
 
-        self.levels = [level1, level2, level3]
+        level4 = Level()
+        level4.blocks.add(Moss((800, 800), (0, 0), 200, 200, "The wall"))
+        level4.blocks.add(Moss((100, 800), (0, 0), 200, 200, "back wall"))
+
+        self.levels = [level1, level2, level3, level4]
 
     def get_level(self, i):
         self.init_levels()
-        return self.levels[i%3]
+        return self.levels[i%4]
 
 
 class Level:

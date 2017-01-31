@@ -126,11 +126,9 @@ class AngryBirds:
         self.blocks = level.get_blocks()
 
         for enemy in self.enemies:
-            print str(enemy.identifier)
             self.space.add(enemy, enemy.poly)
 
         for block in self.blocks:
-            print str(block.identifier)
             self.space.add(block, block.poly)
 
     def run_game(self):
@@ -141,8 +139,9 @@ class AngryBirds:
 
     def tick(self):
         self.handle_events()
-        self.apply_rules()
-        self.simulate()
+        if not self.instructions:
+            self.apply_rules()
+            self.simulate()
         self.update_display()
 
     def handle_events(self):
@@ -208,10 +207,10 @@ class AngryBirds:
 
     def apply_rules(self):
 
-        if len(self.enemies) == 0:
+        '''if len(self.enemies) == 0:
             self.instructions = False
             self.currentLevel += 1
-            self.init_level(self.currentLevel)
+            self.init_level(self.currentLevel)'''
 
         if self.pulling:
             bird = stoneBird(self.slingshot.position.to_tuple(),
@@ -285,7 +284,12 @@ class AngryBirds:
                            text_color)
         else:
             self.window.fill(AngryBirds.WINDOW_COLOR)
+<<<<<<< HEAD
             what = self.font.render("Level: " + str(self.currentLevel) + "     Score: " + str(self.score), True, pygame.Color("Black"), background=None)
+=======
+
+            what = self.font.render("Level: " + str(self.currentLevel) + "     Score: " + str(self.score), True, pygame.Color("Black"))
+>>>>>>> c0cd874853982d1f20825c0b63e1d69556ce00ed
             self.window.blit(what, (100, 100))
             self.slingshots.draw(self.window)
             self.birds.update(self.window)
@@ -308,5 +312,5 @@ class PhysicsEnvironment:
         self.gravity = gravity
         self.drag = drag
 
-angry_birds = AngryBirds(640*2, 480*2)
+angry_birds = AngryBirds(1920, 1080)
 angry_birds.run_game()
