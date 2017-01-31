@@ -121,11 +121,9 @@ class AngryBirds:
         self.blocks = level.get_blocks()
 
         for enemy in self.enemies:
-            print str(enemy.identifier)
             self.space.add(enemy, enemy.poly)
 
         for block in self.blocks:
-            print str(block.identifier)
             self.space.add(block, block.poly)
 
     def run_game(self):
@@ -136,8 +134,9 @@ class AngryBirds:
 
     def tick(self):
         self.handle_events()
-        self.apply_rules()
-        self.simulate()
+        if not self.instructions:
+            self.apply_rules()
+            self.simulate()
         self.update_display()
 
     def handle_events(self):
@@ -280,11 +279,8 @@ class AngryBirds:
                            text_color)
         else:
             self.window.fill(AngryBirds.WINDOW_COLOR)
-            util.draw_text(self.window,
-                           "Score: " + str(self.score),
-                           (250, 50),
-                           50,
-                           pygame.Color("Black"))
+
+
             self.slingshots.draw(self.window)
             self.birds.update(self.window)
             self.enemies.draw(self.window)
