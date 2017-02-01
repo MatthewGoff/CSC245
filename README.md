@@ -7,11 +7,14 @@ here.
 
 Sources:
 
-Transparance: http://stackoverflow.com/questions/17581545/drawn-surface-transparency-in-pygame
+Transparancy: http://stackoverflow.com/questions/17581545/drawn-surface-transparency-in-pygame
 Quadtree: https://gamedevelopment.tutsplus.com/tutorials/quick-tip-use-quadtrees-to-detect-likely-collisions-in-2d-space--gamedev-374
 Collisions: http://vobarian.com/collisions/2dcollisions2.pdf
+
+Angry Birds:
 Sprites: http://stackoverflow.com/questions/13057901/how-do-i-bind-a-pyglet-sprite-with-a-pymunk-shape-so-they-rotate-together
 https://github.com/viblo/pymunk/blob/master/examples/breakout.py
+Getting collision events: https://github.com/viblo/pymunk/blob/master/examples/breakout.py
 
 Images:
 
